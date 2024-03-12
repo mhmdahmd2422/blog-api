@@ -11,7 +11,6 @@ class CommentSeeder extends Seeder
     public function run(): void
     {
          Comment::factory()->count(200)
-         ->recycle(Post::all())
-         ->create();
+         ->recycle(Post::all())->create();
     }
 }

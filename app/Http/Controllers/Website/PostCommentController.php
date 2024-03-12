@@ -13,7 +13,7 @@ class PostCommentController extends Controller
 {
     public function index(Post $post)
     {
-        if($post->is_visible !== true) {
+        if ($post->is_visible !== true) {
             return response('', 403);
         }
 
@@ -24,7 +24,7 @@ class PostCommentController extends Controller
 
     public function store(StoreCommentRequest $request, Post $post)
     {
-        if($post->is_visible !== true) {
+        if ($post->is_visible !== true) {
             return response('', 403);
         }
 
@@ -38,7 +38,7 @@ class PostCommentController extends Controller
 
     public function show(Comment $comment)
     {
-        if($comment->post->is_visible !== true) {
+        if ($comment->post->is_visible !== true) {
             return response('', 403);
         }
 
@@ -49,7 +49,7 @@ class PostCommentController extends Controller
 
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
-        if($comment->post->is_visible !== true) {
+        if ($comment->post->is_visible !== true) {
             return response('', 403);
         }
 
@@ -63,7 +63,7 @@ class PostCommentController extends Controller
 
     public function destroy(Comment $comment)
     {
-        if($comment->post->is_visible !== true) {
+        if ($comment->post->is_visible !== true) {
             return response('', 403);
         }
 

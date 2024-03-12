@@ -20,9 +20,10 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
         $post = $request->storePost();
-        if($request->has('image')) {
-            $post->image = uploadImage($request->file('image'), 'uploads/posts/');
-            $post->save();
+        if ($request->has('image')) {
+            $post->image()->create([
+                'path' => uploadImage($request->file('image'), 'uploads/posts/')
+            ]);
         }
 
         return response([
@@ -41,12 +42,10 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         $request->updatePost();
-        if($request->has('image')) {
-            $post->image = updateImage(
-                $request->file('image'),
-                $post->image,
-                'uploads/posts/'
-            );
+        if ($request->has('image')) {
+            $post->image()->update([
+                'path' => updateImage($request->file('image'), $post->image, 'uploads/posts/')
+            ]);
             $post->save();
         }
 

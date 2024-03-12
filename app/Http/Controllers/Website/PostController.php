@@ -20,7 +20,7 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
         $post = $request->storePost();
-        if($request->has('image')) {
+        if ($request->has('image')) {
             $post->image = uploadImage($request->file('image'), 'uploads/posts/');
             $post->save();
         }
@@ -33,7 +33,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        if($post->is_visible !== true) {
+        if ($post->is_visible !== true) {
             return response('', 403);
         }
 
@@ -44,12 +44,12 @@ class PostController extends Controller
 
     public function update(UpdatePostRequest $request, Post $post)
     {
-        if($post->is_visible !== true) {
+        if ($post->is_visible !== true) {
             return response('', 403);
         }
 
         $request->updatePost();
-        if($request->has('image')) {
+        if ($request->has('image')) {
             $post->image = updateImage(
                 $request->file('image'),
                 $post->image,
@@ -66,7 +66,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        if($post->is_visible !== true) {
+        if ($post->is_visible !== true) {
             return response('', 403);
         }
 

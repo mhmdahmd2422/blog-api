@@ -14,9 +14,14 @@ function uploadImage(UploadedFile $image, $path): string
 
 function updateImage(UploadedFile $image, $oldPath, $path): string
 {
-    if(Storage::exists($oldPath)){
-        Storage::delete($oldPath);
-    }
+    deleteImage($oldPath);
 
     return uploadImage($image, $path);
+}
+
+function deleteImage($path): void
+{
+    if (Storage::exists($path)) {
+        Storage::delete($path);
+    }
 }

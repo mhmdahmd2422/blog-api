@@ -8,17 +8,12 @@ use Illuminate\Database\Seeder;
 
 class PostSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Post::factory()->count(20)
-            ->recycle(User::all())
+        Post::factory()->count(20)->recycle(User::all())
             ->sequence(
                 ['is_visible' => true],
                 ['is_visible' => false],
-            )
-            ->create();
+            )->create();
     }
 }

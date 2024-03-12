@@ -15,7 +15,7 @@ class PostResource extends JsonResource
             'user' => UserResource::make($this->whenLoaded('user')),
             'title' => $this->title,
             'description' => $this->description,
-            'image' => $this->image,
+            'image' => $this->image->path,
             'is_visible' => $this->when(Str::contains($request->route()->uri(), 'admin'), $this->is_visible),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

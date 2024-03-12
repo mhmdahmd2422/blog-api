@@ -17,11 +17,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:100'],
             'email' => ['sometimes', 'email'],
-            'password' => [
-                'sometimes',
-                'confirmed',
-                Password::defaults(),
-            ],
+            'password' => ['sometimes', 'confirmed', Password::defaults()],
         ];
     }
 
