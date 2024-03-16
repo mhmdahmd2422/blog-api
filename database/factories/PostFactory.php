@@ -16,10 +16,17 @@ class PostFactory extends Factory
         ];
     }
 
-    public function unvisible(): static
+    public function invisible(): static
     {
         return $this->state(fn (array $attributes) => [
             'is_visible' => false,
+        ]);
+    }
+
+    public function visible(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_visible' => true,
         ]);
     }
 }

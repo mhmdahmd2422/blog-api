@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 
 class UpdatePostRequest extends FormRequest
 {
@@ -15,15 +16,28 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             'user_id' => ['sometimes', 'exists:users,id'],
-            'title' => ['sometimes', 'string', 'max:255'],
-            'description' => ['sometimes', 'string', 'max:2000'],
+            'title' => ['sometimes', 'string', 'min:10', 'max:255'],
+            'description' => ['sometimes', 'string', 'min:50', 'max:2000'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'is_visible' => ['sometimes', 'boolean'],
+            'is_visible' => ['sometimes', 'boolean']
         ];
     }
 
-    public function updatePost(): bool
+    public function updatePost(): void
     {
-        return $this->post->update($this->request->all());
+        $post = $this->post->load('image');
+        $post->update($this->safe()->except('image'));
+
+        $this->whenHas('image', function (UploadedFile $image) use ($post) {
+            if ($post->image) {
+                $post->image()->update([
+                    'path' => updateImage($image, $post->image->path, 'uploads/posts/')
+                ]);
+            } else {
+                $post->image()->create([
+                    'path' => uploadImage($image, 'uploads/posts/')
+                ]);
+            }
+        });
     }
 }

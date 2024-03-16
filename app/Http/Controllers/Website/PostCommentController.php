@@ -8,38 +8,33 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
+use Illuminate\Http\Response;
 
 class PostCommentController extends Controller
 {
-    public function index(Post $post)
+    public function index(Post $post): Response
     {
-        if ($post->is_visible !== true) {
-            return response('', 403);
-        }
-
         return response([
             'comments' => CommentResource::collection($post->comments),
         ]);
     }
 
-    public function store(StoreCommentRequest $request, Post $post)
+    public function store(StoreCommentRequest $request, Post $post): Response
     {
-        if ($post->is_visible !== true) {
-            return response('', 403);
-        }
-
         $comment = $request->storeComment();
 
         return response([
             'comment' => CommentResource::make($comment),
-            'message' => 'Comment Created.'
+            'message' => __('postComments.store')
         ]);
     }
 
-    public function show(Comment $comment)
+    public function show(Post $post, Comment $comment): Response
     {
-        if ($comment->post->is_visible !== true) {
-            return response('', 403);
+        if ($comment->post()->isNot($post)) {
+            return response([
+                'message' => __('postComments.error')
+            ], 404);
         }
 
         return response([
@@ -47,30 +42,34 @@ class PostCommentController extends Controller
         ]);
     }
 
-    public function update(UpdateCommentRequest $request, Comment $comment)
+    public function update(UpdateCommentRequest $request, Post $post, Comment $comment): Response
     {
-        if ($comment->post->is_visible !== true) {
-            return response('', 403);
+        if ($comment->post()->isNot($post)) {
+            return response([
+                'message' => __('postComments.error')
+            ], 404);
         }
 
         $request->updateComment();
 
         return response([
             'comment' => CommentResource::make($comment),
-            'message' => 'Comment Updated.'
+            'message' => __('postComments.update')
         ]);
     }
 
-    public function destroy(Comment $comment)
+    public function destroy(Post $post, Comment $comment): Response
     {
-        if ($comment->post->is_visible !== true) {
-            return response('', 403);
+        if ($comment->post()->isNot($post)) {
+            return response([
+                'message' => __('postComments.error')
+            ], 404);
         }
 
         $comment->delete();
 
         return response([
-            'message' => 'Comment Deleted.'
+            'message' => __('postComments.destroy')
         ]);
     }
 }

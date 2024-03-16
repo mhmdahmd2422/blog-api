@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 
 class PostResource extends JsonResource
 {
@@ -15,10 +14,11 @@ class PostResource extends JsonResource
             'user' => UserResource::make($this->whenLoaded('user')),
             'title' => $this->title,
             'description' => $this->description,
-            'image' => $this->image->path,
-            'is_visible' => $this->when(Str::contains($request->route()->uri(), 'admin'), $this->is_visible),
+            'image' => ImageResource::make($this->image),
+            'is_visible' => $this->is_visible,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'comments' => CommentResource::collection($this->whenLoaded('comments'))
         ];
     }
 }

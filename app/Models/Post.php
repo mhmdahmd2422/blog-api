@@ -45,11 +45,16 @@ class Post extends Model
         return $this->morphOne(Image::class, 'imageable');
     }
 
-    public function delete()
+    public function remove(): bool
     {
-        deleteImage($this->image->path);
-        $this->image()->delete();
+        if ($this->image) {
+            deleteImage($this->image->path);
+            $this->image()->delete();
+        }
+
         $this->comments()->delete();
-        parent::delete();
+        $this->delete();
+
+        return true;
     }
 }

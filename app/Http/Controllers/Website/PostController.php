@@ -7,73 +7,50 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         return response([
             'posts' => PostResource::collection(Post::visible()->get()),
         ]);
     }
 
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request): Response
     {
         $post = $request->storePost();
-        if ($request->has('image')) {
-            $post->image = uploadImage($request->file('image'), 'uploads/posts/');
-            $post->save();
-        }
 
         return response([
             'post' => PostResource::make($post),
-            'message' => 'Post Created.'
+            'message' => __('posts.store')
         ]);
     }
 
-    public function show(Post $post)
+    public function show(Post $post): Response
     {
-        if ($post->is_visible !== true) {
-            return response('', 403);
-        }
-
         return response([
             'post' => PostResource::make($post),
         ]);
     }
 
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post): Response
     {
-        if ($post->is_visible !== true) {
-            return response('', 403);
-        }
-
         $request->updatePost();
-        if ($request->has('image')) {
-            $post->image = updateImage(
-                $request->file('image'),
-                $post->image,
-                'uploads/posts/'
-            );
-            $post->save();
-        }
 
         return response([
             'post' => PostResource::make($post),
-            'message' => 'Post Updated.'
+            'message' => __('posts.update')
         ]);
     }
 
-    public function destroy(Post $post)
+    public function destroy(Post $post): Response
     {
-        if ($post->is_visible !== true) {
-            return response('', 403);
-        }
-
-        $post->delete();
+        $post->remove();
 
         return response([
-            'message' => 'Post Deleted.'
+            'message' => __('posts.destroy')
         ]);
     }
 }

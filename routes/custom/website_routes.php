@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'as' => 'website.',
 ], function () {
-    Route::resource('/posts', PostController::class)
-        ->except(['create', 'edit']);
-    Route::resource('posts.comments', PostCommentController::class)
-        ->except(['create', 'edit'])->shallow();
+    Route::apiResource('/posts', PostController::class);
+    Route::apiResource('posts.comments', PostCommentController::class);
 });

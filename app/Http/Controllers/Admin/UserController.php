@@ -7,49 +7,50 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         return response([
            'users' => UserResource::collection(User::all()),
         ]);
     }
 
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): Response
     {
         $user = $request->storeUser();
 
         return response([
             'user' => UserResource::make($user),
-            'message' => 'User Created.'
+            'message' => __('users.store')
         ]);
     }
 
-    public function show(User $user)
+    public function show(User $user): Response
     {
         return response([
             'user' => UserResource::make($user),
         ]);
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user): Response
     {
         $request->updateUser();
 
         return response([
             'user' => UserResource::make($user),
-            'message' => 'User Updated.'
+            'message' => __('users.update')
         ]);
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user): Response
     {
-        $user->delete();
+        $user->remove();
 
         return response([
-            'message' => 'User Deleted.'
+            'message' => __('users.destroy')
         ]);
     }
 }

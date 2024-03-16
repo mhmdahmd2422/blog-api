@@ -9,10 +9,7 @@ Route::group([
     'as' => 'admin.',
     'prefix' => 'admin'
 ], function () {
-    Route::resource('/users', UserController::class)
-        ->except(['create', 'edit']);
-    Route::resource('/posts', PostController::class)
-        ->except(['create', 'edit']);
-    Route::resource('posts.comments', PostCommentController::class)
-        ->except(['create', 'edit'])->shallow();
+    Route::apiResource('/users', UserController::class);
+    Route::apiResource('/posts', PostController::class);
+    Route::apiResource('posts.comments', PostCommentController::class);
 });

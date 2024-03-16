@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class StorePostRequest extends FormRequest
@@ -17,24 +18,27 @@ class StorePostRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'exists:users,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:2000'],
+            'title' => ['required', 'string', 'min:10', 'max:255'],
+            'description' => ['required', 'string', 'min:50', 'max:2000'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => [
                 Rule::when(request()->routeIs('website.posts.store'), 'exclude'),
                 Rule::when(request()->routeIs('admin.posts.store'), 'required'),
                 'boolean'
-            ],
+            ]
         ];
     }
 
-//    protected function passedValidation(): void
-//    {
-//        $this->replace(['image' => uploadImage($this->request->all(), 'uploads/posts')]);
-//    }
-
     public function storePost(): Post
     {
-        return Post::create($this->request->all());
+        $post = Post::create($this->safe()->except('image'));
+
+        $this->whenHas('image', function (UploadedFile $image) use ($post) {
+            $post->image()->create([
+                'path' => uploadImage($image, 'uploads/posts/')
+            ]);
+        });
+
+        return $post;
     }
 }

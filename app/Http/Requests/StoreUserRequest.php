@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
@@ -16,15 +17,14 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email'],
-            'password' => ['confirmed', Password::defaults()],
+            'name' => ['required', 'string', 'min:5', 'max:50'],
+            'email' => ['required', 'email', Rule::unique('users')],
+            'password' => ['confirmed', Password::defaults()]
         ];
     }
 
     public function storeUser(): User
     {
-        return User::create($this->request->all());
+        return User::create($this->validated());
     }
-
 }

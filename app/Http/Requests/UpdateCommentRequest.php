@@ -14,12 +14,12 @@ class UpdateCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => ['sometimes', 'string', 'max:1500'],
+            'body' => ['sometimes', 'string', 'min:10', 'max:1500']
         ];
     }
 
     public function updateComment()
     {
-        return $this->comment->update($this->request->all());
+        return $this->comment->update($this->validated());
     }
 }
