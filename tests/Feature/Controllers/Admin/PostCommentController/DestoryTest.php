@@ -9,10 +9,7 @@ it('returns not found if comment do not exist for this post', function () {
     $SecondPost = Post::factory()->hasComments(5)->create();
 
     delete(route('admin.posts.comments.destroy', [$firstPost, $SecondPost->comments->first()]))
-        ->assertStatus(404)
-        ->assertExactJson([
-            'message' => __('postComments.error')
-        ]);
+        ->assertStatus(404);
 });
 
 it('can delete a comment for a post', function () {

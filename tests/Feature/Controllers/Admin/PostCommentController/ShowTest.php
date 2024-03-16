@@ -9,10 +9,7 @@ it('returns not found if comment do not exist for this post', function () {
     $SecondPost = Post::factory()->hasComments(5)->create();
 
     get(route('admin.posts.comments.show', [$firstPost, $SecondPost->comments->first()]))
-        ->assertStatus(404)
-        ->assertExactJson([
-            'message' => __('postComments.error')
-        ]);
+        ->assertStatus(404);
 });
 
 it('can show a comment for a post', function () {
@@ -21,6 +18,6 @@ it('can show a comment for a post', function () {
     get(route('admin.posts.comments.show', [$post, $post->comments->first()]))
         ->assertStatus(200)
         ->assertExactJson([
-            'comment' => getResponseData(CommentResource::make($post->comments->first()->load('post')))
+            'comment' => getResponseData(CommentResource::make($post->comments->first()))
         ]);
 });

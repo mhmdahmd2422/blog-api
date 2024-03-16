@@ -10,10 +10,7 @@ it('returns not found if comment do not exist for this post', function () {
     $SecondPost = Post::factory()->hasComments(5)->create();
 
     put(route('admin.posts.comments.update', [$firstPost, $SecondPost->comments->first()]))
-        ->assertStatus(404)
-        ->assertExactJson([
-            'message' => __('postComments.error')
-        ]);
+        ->assertStatus(404);
 });
 
 it('can update a comment for a post', function () {

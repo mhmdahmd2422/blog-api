@@ -11,5 +11,5 @@ Route::group([
 ], function () {
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/posts', PostController::class);
-    Route::apiResource('posts.comments', PostCommentController::class);
+    Route::apiResource('posts.comments', PostCommentController::class)->scoped();
 });
