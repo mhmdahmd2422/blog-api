@@ -18,7 +18,7 @@ it('can update a user', function () {
     $response
         ->assertStatus(200)
         ->assertExactJson([
-            'user' => getResponseData(UserResource::make($updatedUser)),
+            'user' => responseData(UserResource::make($updatedUser)),
             'message' => __('users.update')
         ]);
 

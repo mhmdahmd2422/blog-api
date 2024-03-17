@@ -21,11 +21,7 @@ class StorePostRequest extends FormRequest
             'title' => ['required', 'string', 'min:10', 'max:255'],
             'description' => ['required', 'string', 'min:50', 'max:2000'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'is_visible' => [
-                Rule::when(request()->routeIs('website.posts.store'), 'exclude'),
-                Rule::when(request()->routeIs('admin.posts.store'), 'required'),
-                'boolean'
-            ]
+            'is_visible' => ['required', 'boolean']
         ];
     }
 
@@ -35,6 +31,7 @@ class StorePostRequest extends FormRequest
 
         $this->whenHas('image', function (UploadedFile $image) use ($post) {
             $post->image()->create([
+                'user_id' => $post->user_id,
                 'path' => uploadImage($image, 'uploads/posts/')
             ]);
         });

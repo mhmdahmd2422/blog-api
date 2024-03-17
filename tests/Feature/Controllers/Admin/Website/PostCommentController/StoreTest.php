@@ -12,7 +12,7 @@ it('can store comment for post', function () {
     expect($post->comments)
         ->toHaveCount(0);
 
-    $response = post(route('admin.posts.comments.store', $post), [
+    $response = post(route('website.posts.comments.store', $post), [
         'user_id' => $comment->user->id,
         'body' => $comment->body
     ]);
@@ -21,7 +21,7 @@ it('can store comment for post', function () {
 
     $response->assertStatus(200)
         ->assertExactJson([
-            'comment' => getResponseData(CommentResource::make($comment)),
+            'comment' => responseData(CommentResource::make($comment)),
             'message' => __('postComments.store')
         ]);
 
@@ -38,7 +38,7 @@ it('can store comment for post', function () {
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
     $comment = Comment::factory()->create();
 
-    post(route('admin.posts.comments.store', $comment->post), [...$badData])
+    post(route('website.posts.comments.store', $comment->post), [...$badData])
         ->assertInvalid($errors);
 })->with([
     [['body' => null], 'body'],

@@ -31,12 +31,6 @@ class PostCommentController extends Controller
 
     public function show(Post $post, Comment $comment): Response
     {
-        if ($comment->post()->isNot($post)) {
-            return response([
-                'message' => __('postComments.error')
-            ], 404);
-        }
-
         return response([
             'comment' => CommentResource::make($comment),
         ]);
@@ -44,12 +38,6 @@ class PostCommentController extends Controller
 
     public function update(UpdateCommentRequest $request, Post $post, Comment $comment): Response
     {
-        if ($comment->post()->isNot($post)) {
-            return response([
-                'message' => __('postComments.error')
-            ], 404);
-        }
-
         $request->updateComment();
 
         return response([
@@ -60,12 +48,6 @@ class PostCommentController extends Controller
 
     public function destroy(Post $post, Comment $comment): Response
     {
-        if ($comment->post()->isNot($post)) {
-            return response([
-                'message' => __('postComments.error')
-            ], 404);
-        }
-
         $comment->delete();
 
         return response([

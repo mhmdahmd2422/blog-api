@@ -21,12 +21,14 @@ it('has comments', function () {
         ->each->toBeInstanceOf(Comment::class);
 });
 
-//it('has images', function () {
-//    $user = User::factory()->create();
-//    $post = Post::factory()->for($user)->create();
-//    $images = Image::factory()->count(5)->for($post);
-//
-//    expect($user->images)
-//        ->toHaveCount(5)
-//        ->each->toBeInstanceOf(Image::class);
-//});
+it('has images', function () {
+    $user = User::factory()->create();
+    $post = Post::factory()->for($user)->create();
+    $images = Image::factory()->count(5)
+        ->for($post, 'imageable')
+        ->for($user)->create();
+
+    expect($user->images)
+        ->toHaveCount(5)
+        ->each->toBeInstanceOf(Image::class);
+});

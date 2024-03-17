@@ -44,7 +44,7 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function getResponseData($resource)
+function responseData($resource)
 {
     $resource = $resource->response()->getData(true);
 

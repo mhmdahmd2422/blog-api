@@ -10,6 +10,6 @@ it('show a user', function () {
    get(route('admin.users.show', $user))
        ->assertStatus(200)
        ->assertExactJson([
-           'user' => getResponseData(UserResource::make($user))
+           'user' => responseData(UserResource::make($user))
        ]);
 });

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -12,6 +13,7 @@ class Image extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'path'
     ];
 
@@ -20,9 +22,8 @@ class Image extends Model
         return $this->morphTo();
     }
 
-    public function user(): hasOneThrough
+    public function user(): BelongsTo
     {
-        return $this->hasOneThrough(User::class, Post::class, 'imageable_id')
-            ->where('imageable_type', static::class);
+        return $this->belongsTo(User::class);
     }
 }

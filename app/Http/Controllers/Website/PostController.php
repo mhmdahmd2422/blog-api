@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\Http\Middleware\CheckPostVisibility;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(CheckPostVisibility::class);
+    }
+
     public function index(): Response
     {
         return response([
@@ -18,39 +22,10 @@ class PostController extends Controller
         ]);
     }
 
-    public function store(StorePostRequest $request): Response
-    {
-        $post = $request->storePost();
-
-        return response([
-            'post' => PostResource::make($post),
-            'message' => __('posts.store')
-        ]);
-    }
-
     public function show(Post $post): Response
     {
         return response([
             'post' => PostResource::make($post),
-        ]);
-    }
-
-    public function update(UpdatePostRequest $request, Post $post): Response
-    {
-        $request->updatePost();
-
-        return response([
-            'post' => PostResource::make($post),
-            'message' => __('posts.update')
-        ]);
-    }
-
-    public function destroy(Post $post): Response
-    {
-        $post->remove();
-
-        return response([
-            'message' => __('posts.destroy')
         ]);
     }
 }

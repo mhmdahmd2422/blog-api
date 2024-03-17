@@ -14,6 +14,6 @@ it('can get all posts', function () {
     get(route('admin.posts.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'posts' => getResponseData(PostResource::collection($posts->load('image')))
+            'posts' => responseData(PostResource::collection($posts->load('image')))
         ]);
 });

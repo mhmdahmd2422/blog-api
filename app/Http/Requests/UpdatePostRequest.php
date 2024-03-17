@@ -35,6 +35,7 @@ class UpdatePostRequest extends FormRequest
                 ]);
             } else {
                 $post->image()->create([
+                    'user_id' => $post->user_id,
                     'path' => uploadImage($image, 'uploads/posts/')
                 ]);
             }

@@ -11,5 +11,6 @@ Route::group([
 ], function () {
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/posts', PostController::class);
-    Route::apiResource('posts.comments', PostCommentController::class)->scoped();
+    Route::apiResource('posts.comments', PostCommentController::class)
+        ->except(['store', 'update'])->scoped();
 });

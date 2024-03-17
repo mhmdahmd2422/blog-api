@@ -9,7 +9,7 @@ it('returns not found if comment do not exist for this post', function () {
     $firstPost = Post::factory()->hasComments(5)->create();
     $SecondPost = Post::factory()->hasComments(5)->create();
 
-    put(route('admin.posts.comments.update', [$firstPost, $SecondPost->comments->first()]))
+    put(route('website.posts.comments.update', [$firstPost, $SecondPost->comments->first()]))
         ->assertStatus(404);
 });
 
@@ -18,12 +18,12 @@ it('can update a comment for a post', function () {
    $comment = Comment::factory()->for($post)->create();
    $comment->body = 'updated comment body';
 
-   put(route('admin.posts.comments.update', [$post, $comment]), [
+   put(route('website.posts.comments.update', [$post, $comment]), [
        'body' => $comment->body
    ])
        ->assertStatus(200)
        ->assertExactJson([
-           'comment' => getResponseData(CommentResource::make($comment)),
+           'comment' => responseData(CommentResource::make($comment)),
            'message' => __('postComments.update')
        ]);
 
@@ -40,7 +40,7 @@ it('can update a comment for a post', function () {
 it('requires a valid data when updating', function (array $badData, array|string $errors) {
     $comment = Comment::factory()->create();
 
-    put(route('admin.posts.comments.update', [$comment->post, $comment]), [...$badData])
+    put(route('website.posts.comments.update', [$comment->post, $comment]), [...$badData])
         ->assertInvalid($errors);
 })->with([
     [['body' => null], 'body'],

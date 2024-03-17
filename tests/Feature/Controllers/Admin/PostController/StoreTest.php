@@ -18,7 +18,7 @@ it('can store a new post', function () {
     ])
         ->assertStatus(200)
         ->assertExactJson([
-            'post' => getResponseData(PostResource::make(Post::first())),
+            'post' => responseData(PostResource::make(Post::first())),
             'message' => __('posts.store')
         ]);
 
@@ -43,7 +43,7 @@ it('can store a post with image', function () {
     ])
         ->assertStatus(200)
         ->assertExactJson([
-            'post' => getResponseData(PostResource::make(Post::first()->load('image'))),
+            'post' => responseData(PostResource::make(Post::first()->load('image'))),
             'message' => __('posts.store')
         ]);
 

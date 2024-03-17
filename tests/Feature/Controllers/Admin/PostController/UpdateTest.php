@@ -24,7 +24,7 @@ it('can update a post', function () {
 
     $response->assertStatus(200)
         ->assertExactJson([
-            'post' => getResponseData(PostResource::make($updatedPost)),
+            'post' => responseData(PostResource::make($updatedPost)),
             'message' => __('posts.update')
         ]);
 
@@ -51,7 +51,7 @@ it('can add a photo to existing post', function () {
     ])
         ->assertStatus(200)
         ->assertExactJson([
-            'post' => getResponseData(PostResource::make($post)),
+            'post' => responseData(PostResource::make($post)),
             'message' => __('posts.update')
         ]);
 
@@ -83,7 +83,7 @@ it('can update image of an existing post', function () {
     ])
         ->assertStatus(200)
         ->assertExactJson([
-            'post' => getResponseData(PostResource::make($post->fresh())),
+            'post' => responseData(PostResource::make($post->fresh())),
             'message' => __('posts.update')
         ]);
 

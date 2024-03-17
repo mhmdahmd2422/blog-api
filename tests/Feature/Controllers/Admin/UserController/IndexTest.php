@@ -13,6 +13,6 @@ it('get all users', function () {
     get(route('admin.users.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'users' => getResponseData(UserResource::collection($users))
+            'users' => responseData(UserResource::collection($users))
         ]);
 });

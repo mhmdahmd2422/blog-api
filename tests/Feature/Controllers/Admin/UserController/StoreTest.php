@@ -19,7 +19,7 @@ it('can create a user', function () {
     $response
         ->assertStatus(200)
         ->assertExactJson([
-            'user' => getResponseData(UserResource::make($user)),
+            'user' => responseData(UserResource::make($user)),
             'message' => __('users.store')
         ]);
 
