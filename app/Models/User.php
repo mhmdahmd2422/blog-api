@@ -40,11 +40,6 @@ class User extends Authenticatable
         return $this->hasManyThrough(Comment::class, Post::class);
     }
 
-    public function images()
-    {
-        return $this->hasMany(Image::class);
-    }
-
     public function remove(): bool
     {
         $this->posts->each(function ($post) {

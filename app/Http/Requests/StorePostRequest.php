@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Validation\Rule;
 
 class StorePostRequest extends FormRequest
 {
@@ -31,7 +30,6 @@ class StorePostRequest extends FormRequest
 
         $this->whenHas('image', function (UploadedFile $image) use ($post) {
             $post->image()->create([
-                'user_id' => $post->user_id,
                 'path' => uploadImage($image, 'uploads/posts/')
             ]);
         });
