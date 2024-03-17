@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{post};
 
 it('can store a new post', function () {
-    $post = Post::factory()->visible()->make();
+    $post = Post::factory()->invisible()->make();
 
     post(route('admin.posts.store'), [
         'user_id' => $post->user_id,
@@ -31,7 +31,7 @@ it('can store a new post', function () {
 });
 
 it('can store a post with image', function () {
-    $post = Post::factory()->visible()->make();
+    $post = Post::factory()->invisible()->make();
     $image = UploadedFile::fake()->image('testImage.png');
 
     post(route('admin.posts.store'), [
@@ -69,7 +69,7 @@ it('can store a post with image', function () {
 });
 
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    $post = Post::factory()->visible()->create();
+    $post = Post::factory()->invisible()->create();
 
     post(route('admin.posts.store'), [[
         'user_id' => $post->user_id,

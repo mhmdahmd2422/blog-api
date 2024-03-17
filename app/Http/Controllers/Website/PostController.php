@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Http\Middleware\CheckPostVisibility;
+use App\Http\Middleware\ResourceVisibility;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Response;
@@ -12,7 +12,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(CheckPostVisibility::class);
+        $this->middleware(ResourceVisibility::class);
     }
 
     public function index(): Response

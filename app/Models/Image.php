@@ -21,4 +21,12 @@ class Image extends Model
     {
         return $this->morphTo();
     }
+
+    public function remove(): bool
+    {
+        deleteImage($this->path);
+        $this->delete();
+
+        return true;
+    }
 }

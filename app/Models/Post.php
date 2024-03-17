@@ -48,8 +48,7 @@ class Post extends Model
     public function remove(): bool
     {
         if ($this->image) {
-            deleteImage($this->image->path);
-            $this->image()->delete();
+            $this->image->remove();
         }
 
         $this->comments()->delete();

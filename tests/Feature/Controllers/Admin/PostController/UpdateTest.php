@@ -43,7 +43,7 @@ it('can update a post', function () {
 });
 
 it('can add a photo to existing post', function () {
-    $post = Post::factory()->visible()->create();
+    $post = Post::factory()->invisible()->create();
     $image = UploadedFile::fake()->image('testImage.png');
 
     put(route('admin.posts.update', $post), [
@@ -65,7 +65,7 @@ it('can add a photo to existing post', function () {
 });
 
 it('can update image of an existing post', function () {
-    $post = Post::factory()->visible()->create();
+    $post = Post::factory()->invisible()->create();
     $oldImage = UploadedFile::fake()->image('testImage1.png');
     $oldImagePath = 'uploads/posts/'.$oldImage->hashName();
     $newImage = UploadedFile::fake()->image('testImage2.png');
@@ -109,7 +109,7 @@ it('can update image of an existing post', function () {
 });
 
 it('requires a valid data when updating', function (array $badData, array|string $errors) {
-    $oldPost = Post::factory()->visible()->create();
+    $oldPost = Post::factory()->invisible()->create();
     $updatedPost = Post::factory()->for($oldPost->user)->visible()->create([
         'title' => 'updated title',
         'description' => 'updated description'
