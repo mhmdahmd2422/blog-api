@@ -14,7 +14,7 @@ class PostController extends Controller
     public function index(): Response
     {
         return response([
-            'posts' => PostResource::collection(Post::all()),
+            'posts' => PostResource::collection(Post::all()->load('images')),
         ]);
     }
 
@@ -23,7 +23,7 @@ class PostController extends Controller
         $post = $request->storePost();
 
         return response([
-            'post' => PostResource::make($post),
+            'post' => PostResource::make($post->load('images')),
             'message' => __('posts.store')
         ]);
     }
@@ -31,7 +31,7 @@ class PostController extends Controller
     public function show(Post $post): Response
     {
         return response([
-            'post' => PostResource::make($post),
+            'post' => PostResource::make($post->load('images')),
         ]);
     }
 
