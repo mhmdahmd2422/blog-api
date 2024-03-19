@@ -4,6 +4,7 @@ use App\Models\Comment;
 use App\Models\Image;
 use App\Models\Post;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
 it('can delete a post with all child models', function () {
@@ -11,12 +12,12 @@ it('can delete a post with all child models', function () {
    $comments = Comment::factory()->count(3)->for($post)->create();
    $testImage = UploadedFile::fake()->image('testImage.png');
    $testImagePath = 'uploads/posts/'.$testImage->hashName();
-   $image = Image::factory()->for($post, 'imageable')->create([
+   Image::factory()->count(3)->for($post, 'imageable')->create([
        'path' => $testImagePath
    ]);
 
-   expect($post->image->path)
-       ->toEqual($image->path)
+   expect($post->images)
+       ->toHaveCount(3)
        ->and($post->comments)
        ->toHaveCount(3);
 
@@ -34,11 +35,15 @@ it('can delete a post with all child models', function () {
        'is_visible' => $post->is_visible
    ]);
 
-    $this->assertDatabaseMissing(Image::class, [
-        'imageable_type' => Post::class,
-        'imageable_id' => $post->id,
-        'path' => $testImagePath
-    ]);
+    foreach ($post->images as $image) {
+        $this->assertDatabaseMissing(Image::class, [
+            'imageable_type' => Post::class,
+            'imageable_id' => $post->id,
+            'path' => $image->path
+        ]);
+
+        Storage::assertMissing($image->path);
+    }
 
     foreach ($comments as $comment) {
         $this->assertDatabaseMissing(Comment::class, [

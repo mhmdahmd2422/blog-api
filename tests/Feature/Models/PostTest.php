@@ -20,9 +20,10 @@ it('has comments', function () {
         ->each->toBeInstanceOf(Comment::class);
 });
 
-it('has image', function () {
-    $post = Post::factory()->hasImage()->create();
+it('has images', function () {
+    $post = Post::factory()->hasImages(3)->create();
 
-    expect($post->image)
-        ->toBeInstanceOf(Image::class);
+    expect($post->images)
+        ->toHaveCount(3)
+        ->each->toBeInstanceOf(Image::class);
 });
