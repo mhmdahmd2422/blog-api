@@ -8,17 +8,22 @@ use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{post};
 
 it('can store a new post', function () {
-    $post = Post::factory()->invisible()->make();
+    $post = Post::factory()->invisible()->hasCategories(3)->create();
 
-    post(route('admin.posts.store'), [
+    $response = post(route('admin.posts.store'), [
         'user_id' => $post->user_id,
+        'category_id' => $post->categories,
         'title' => $post->title,
         'description' => $post->description,
-        'is_visible' => $post->is_visible
-    ])
+        'is_visible' => $post->is_visible,
+    ]);
+
+    $post->id = Post::orderBy('id', 'desc')->first()->id;
+
+    $response
         ->assertStatus(200)
-        ->assertExactJson([
-            'post' => responseData(PostResource::make(Post::first())),
+        ->assertJson([
+            'post' => responseData(PostResource::make($post)),
             'message' => __('posts.store')
         ]);
 
@@ -28,22 +33,34 @@ it('can store a new post', function () {
         'description' => $post->description,
         'is_visible' => $post->is_visible
     ]);
+
+    foreach ($post->categories as $category) {
+        $this->assertDatabaseHas('category_post', [
+            'category_id' => $category->id,
+            'post_id' => $post->id
+        ]);
+    }
 });
 
 it('can store a post with image', function () {
-    $post = Post::factory()->invisible()->make();
+    $post = Post::factory()->invisible()->hasCategories(3)->create();
     $image = UploadedFile::fake()->image('testImage.png');
 
-    post(route('admin.posts.store'), [
+    $response = post(route('admin.posts.store'), [
         'user_id' => $post->user_id,
+        'category_id' => $post->categories,
         'title' => $post->title,
         'description' => $post->description,
         'image' => $image,
         'is_visible' => $post->is_visible
-    ])
+    ]);
+
+    $post->id = Post::orderBy('id', 'desc')->first()->id;
+
+    $response
         ->assertStatus(200)
-        ->assertExactJson([
-            'post' => responseData(PostResource::make(Post::first()->load('image'))),
+        ->assertJson([
+            'post' => responseData(PostResource::make($post->load('image'))),
             'message' => __('posts.store')
         ]);
 
@@ -54,25 +71,24 @@ it('can store a post with image', function () {
         'is_visible' => $post->is_visible
     ]);
 
-    $createdPost = Post::first();
-
-    expect($createdPost->image)
+    expect($post->image)
         ->toEqual(Image::first());
 
     $this->assertDatabaseHas(Image::class, [
         'imageable_type' => Post::class,
-        'imageable_id' => $createdPost->id,
-        'path' => $createdPost->image->path,
+        'imageable_id' => $post->id,
+        'path' => $post->image->path,
     ]);
 
     Storage::assertExists('uploads/posts/'.$image->hashName());
 });
 
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    $post = Post::factory()->invisible()->create();
+    $post = Post::factory()->invisible()->hasCategories(3)->create();
 
     post(route('admin.posts.store'), [[
         'user_id' => $post->user_id,
+        'category_id' => $post->categories,
         'title' => $post->title,
         'description' => $post->description,
         'is_visible' => $post->is_visible,
@@ -84,6 +100,10 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['user_id' => 1.5], 'user_id'],
     [['user_id' => true], 'user_id'],
     [['user_id' => 'string'], 'user_id'],
+    [['category_id' => [null]], 'category_id.0'],
+    [['category_id' => [1.5]], 'category_id.0'],
+    [['category_id' => [true]], 'category_id.0'],
+    [['category_id' => ['string']], 'category_id.0'],
     [['title' => null], 'title'],
     [['title' => 2], 'title'],
     [['title' => 1.5], 'title'],

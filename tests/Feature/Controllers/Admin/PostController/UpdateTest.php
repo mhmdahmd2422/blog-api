@@ -1,20 +1,34 @@
 <?php
 
 use App\Http\Resources\PostResource;
+use App\Models\Category;
 use App\Models\Image;
 use App\Models\Post;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{put};
 
-it('can update a post', function () {
-    $oldPost = Post::factory()->invisible()->create();
-    $updatedPost = Post::factory()->for($oldPost->user)->visible()->create([
+it('can update a post and its category', function () {
+    $oldPost = Post::factory()->invisible()->has(
+        Category::factory()->count(2)->sequence(
+            ['id' => 1],
+            ['id' => 2]
+        )
+    )->create();
+    $updatedPost = Post::factory()->for($oldPost->user)->visible()
+        ->has(
+            Category::factory()->count(2)->sequence(
+                ['id' => 3],
+                ['id' => 4]
+            )
+        )
+        ->create([
         'title' => 'updated title',
         'description' => str_repeat('updated description',5)
     ]);
     $response = put(route('admin.posts.update', $oldPost), [
         'user_id' => $updatedPost->user_id,
+        'category_id' => $updatedPost->categories,
         'title' => $updatedPost->title,
         'description' => $updatedPost->description,
         'is_visible' => $updatedPost->is_visible,
@@ -40,6 +54,13 @@ it('can update a post', function () {
         'description' => str_repeat('updated description',5),
         'is_visible' => true
     ]);
+
+    foreach ($updatedPost->categories as $category) {
+        $this->assertDatabaseHas('category_post', [
+            'category_id' => $category->id,
+            'post_id' => $updatedPost->id
+        ]);
+    }
 });
 
 it('can add a photo to existing post', function () {

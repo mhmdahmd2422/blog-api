@@ -1,0 +1,19 @@
+<?php
+
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
+use function Pest\Laravel\{get};
+
+it('can get all categories', function () {
+   $categories = Category::factory()->count(10)
+       ->sequence(
+           ['is_visible' => true],
+           ['is_visible' => false],
+       )->create();
+
+   get(route('admin.categories.index'))
+       ->assertStatus(200)
+       ->assertExactJson([
+           'categories' => responseData(CategoryResource::collection($categories))
+       ]);
+});

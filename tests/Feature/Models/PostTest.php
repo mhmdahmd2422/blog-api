@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Image;
 use App\Models\Post;
@@ -25,4 +26,12 @@ it('has image', function () {
 
     expect($post->image)
         ->toBeInstanceOf(Image::class);
+});
+
+it('has categories', function () {
+    $post = Post::factory()->hasCategories(3)->create();
+
+    expect($post->categories)
+        ->toHaveCount(3)
+        ->each->toBeInstanceOf(Category::class);
 });
