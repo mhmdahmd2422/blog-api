@@ -21,6 +21,12 @@ class ResourceVisibility
             }
         }
 
+        if ($request->route('category')) {
+            if (! $request->category->is_visible) {
+                return response('', 404);
+            }
+        }
+
         return $next($request);
     }
 }
