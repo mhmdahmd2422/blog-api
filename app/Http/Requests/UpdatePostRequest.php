@@ -16,6 +16,8 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             'user_id' => ['sometimes', 'exists:users,id'],
+            'category_id' => ['sometimes'],
+            'category_id.*' => ['integer', 'exists:categories,id'],
             'title' => ['sometimes', 'string', 'min:10', 'max:255'],
             'description' => ['sometimes', 'string', 'min:50', 'max:2000'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
@@ -27,6 +29,8 @@ class UpdatePostRequest extends FormRequest
     {
         $post = $this->post->load('image');
         $post->update($this->safe()->except('image'));
+
+        $post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
 
         $this->whenHas('image', function (UploadedFile $image) use ($post) {
             if ($post->image) {

@@ -15,6 +15,7 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'image' => ImageResource::make($this->image),
+            'categories' => CategoryResource::collection($this->categories),
             'is_visible' => $this->is_visible,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

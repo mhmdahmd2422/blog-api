@@ -5,20 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class Post extends Model
+class Category extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'title',
-        'description',
-        'image',
+        'name',
         'is_visible',
     ];
 
@@ -31,14 +26,9 @@ class Post extends Model
         $query->where('is_visible', true);
     }
 
-    public function user(): BelongsTo
+    public function posts(): BelongsToMany
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
+        return $this->belongsToMany(Post::class)->withTimestamps();
     }
 
     public function image(): MorphOne
@@ -46,18 +36,20 @@ class Post extends Model
         return $this->morphOne(Image::class, 'imageable');
     }
 
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class)->withTimestamps();
-    }
-
-    public function  remove(): bool
+    public function remove(): bool
     {
         if ($this->image) {
             $this->image->remove();
         }
 
-        $this->comments()->delete();
+        $this->posts->each(function ($post) {
+            $categories = $post->categories->pluck('id');
+            if ($categories->contains($this->id) && $categories->count() == 1) {
+                $post->remove();
+            }
+            $this->posts()->detach($post->id);
+        });
+
         $this->delete();
 
         return true;
