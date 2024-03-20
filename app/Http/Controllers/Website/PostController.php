@@ -25,7 +25,7 @@ class PostController extends Controller
     public function show(Post $post): Response
     {
         return response([
-            'post' => PostResource::make($post),
+            'post' => PostResource::make($post->load('images')),
         ]);
     }
 }

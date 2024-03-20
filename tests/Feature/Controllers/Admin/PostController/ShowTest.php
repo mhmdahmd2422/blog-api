@@ -14,6 +14,6 @@ it('can show a post', function () {
     get(route('admin.posts.show', $posts->first()))
         ->assertStatus(200)
         ->assertExactJson([
-            'post' => responseData(PostResource::make($posts->first()->load('image')))
+            'post' => responseData(PostResource::make($posts->first()->load('images')))
         ]);
 });
