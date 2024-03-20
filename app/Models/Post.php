@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Post extends Model
 {
@@ -41,9 +41,9 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function image(): MorphOne
+    public function images(): MorphMany
     {
-        return $this->morphOne(Image::class, 'imageable');
+        return $this->morphMany(Image::class, 'imageable');
     }
 
     public function categories(): BelongsToMany
@@ -51,15 +51,36 @@ class Post extends Model
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
 
-    public function  remove(): bool
+    public function remove(): bool
     {
-        if ($this->image) {
-            $this->image->remove();
+        if ($this->images) {
+            foreach ($this->images as $image) {
+                $image->remove();
+            }
         }
 
         $this->comments()->delete();
         $this->delete();
 
         return true;
+    }
+
+    public function destroyImage(string $imageId)
+    {
+        $image = Image::whereHasMorph(
+            'imageable',
+            Post::class,
+            function (Builder $query) {
+                $query->whereId($this->id);
+            }
+        )->whereId($imageId)->first();
+
+        if ($image) {
+            $image->remove();
+
+            return $this->load('images');
+        }
+
+        return false;
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PostCommentController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\admin\PostImageController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,6 +13,8 @@ Route::group([
 ], function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('posts', PostController::class);
+    Route::apiResource('posts.image', PostImageController::class)
+        ->only(['update', 'destroy'])->parameters(['image' => 'imageId']);
     Route::apiResource('posts.comments', PostCommentController::class)
         ->except(['store', 'update'])->scoped();
     Route::apiResource('categories', CategoryController::class);

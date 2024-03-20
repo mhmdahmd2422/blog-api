@@ -21,7 +21,8 @@ class StorePostRequest extends FormRequest
             'category_id.*' => ['integer', 'exists:categories,id'],
             'title' => ['required', 'string', 'min:10', 'max:255'],
             'description' => ['required', 'string', 'min:50', 'max:2000'],
-            'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'image' => ['sometimes'],
+            'image.*' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => ['required', 'boolean']
         ];
     }
@@ -32,10 +33,12 @@ class StorePostRequest extends FormRequest
 
         $post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
 
-        $this->whenHas('image', function (UploadedFile $image) use ($post) {
-            $post->image()->create([
-                'path' => uploadImage($image, 'uploads/posts/')
-            ]);
+        $this->whenHas('image', function (array $images) use ($post) {
+            foreach ($images as $image) {
+                $post->images()->create([
+                    'path' => uploadImage($image, 'uploads/posts/')
+                ]);
+            }
         });
 
         return $post;

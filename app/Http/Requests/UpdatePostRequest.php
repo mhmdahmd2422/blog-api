@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\UploadedFile;
 
 class UpdatePostRequest extends FormRequest
 {
@@ -20,28 +20,16 @@ class UpdatePostRequest extends FormRequest
             'category_id.*' => ['integer', 'exists:categories,id'],
             'title' => ['sometimes', 'string', 'min:10', 'max:255'],
             'description' => ['sometimes', 'string', 'min:50', 'max:2000'],
-            'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => ['sometimes', 'boolean']
         ];
     }
 
-    public function updatePost(): void
+    public function updatePost(): Post
     {
-        $post = $this->post->load('image');
-        $post->update($this->safe()->except('image'));
+        $this->post->update($this->validated());
 
-        $post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
+        $this->post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
 
-        $this->whenHas('image', function (UploadedFile $image) use ($post) {
-            if ($post->image) {
-                $post->image()->update([
-                    'path' => updateImage($image, $post->image->path, 'uploads/posts/')
-                ]);
-            } else {
-                $post->image()->create([
-                    'path' => uploadImage($image, 'uploads/posts/')
-                ]);
-            }
-        });
+        return $this->post->fresh();
     }
 }

@@ -42,16 +42,17 @@ it('can store a new post', function () {
     }
 });
 
-it('can store a post with image', function () {
+it('can store a post with images', function () {
     $post = Post::factory()->invisible()->hasCategories(3)->create();
     $image = UploadedFile::fake()->image('testImage.png');
+    $images = [$image, $image, $image];
 
     $response = post(route('admin.posts.store'), [
         'user_id' => $post->user_id,
         'category_id' => $post->categories,
         'title' => $post->title,
         'description' => $post->description,
-        'image' => $image,
+        'image' => $images,
         'is_visible' => $post->is_visible
     ]);
 
@@ -60,7 +61,7 @@ it('can store a post with image', function () {
     $response
         ->assertStatus(200)
         ->assertJson([
-            'post' => responseData(PostResource::make($post->load('image'))),
+            'post' => responseData(PostResource::make($post->load('images'))),
             'message' => __('posts.store')
         ]);
 
@@ -71,16 +72,18 @@ it('can store a post with image', function () {
         'is_visible' => $post->is_visible
     ]);
 
-    expect($post->image)
-        ->toEqual(Image::first());
+    expect($post->images)
+        ->toHaveCount(3);
 
-    $this->assertDatabaseHas(Image::class, [
-        'imageable_type' => Post::class,
-        'imageable_id' => $post->id,
-        'path' => $post->image->path,
-    ]);
+    foreach ($post->images as $image) {
+        $this->assertDatabaseHas(Image::class, [
+            'imageable_type' => Post::class,
+            'imageable_id' => $post->id,
+            'path' => $image->path,
+        ]);
 
-    Storage::assertExists('uploads/posts/'.$image->hashName());
+        Storage::assertExists($image->path);
+    }
 });
 
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
@@ -92,7 +95,7 @@ it('requires a valid data when creating', function (array $badData, array|string
         'title' => $post->title,
         'description' => $post->description,
         'is_visible' => $post->is_visible,
-        'image' => UploadedFile::fake()->image('testImage')
+        'image' => [UploadedFile::fake()->image('testImage')]
     ], ...$badData])
         ->assertInvalid($errors);
 })->with([
@@ -120,8 +123,8 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['is_visible' => 5], 'is_visible'],
     [['is_visible' => 1.5], 'is_visible'],
     [['is_visible' => 'string'], 'is_visible'],
-    [['image' => null], 'image'],
-    [['image' => 5], 'image'],
-    [['image' => 1.5], 'image'],
-    [['image' => 'string'], 'image'],
+    [['image' => [null]], 'image.0'],
+    [['image' => [5]], 'image.0'],
+    [['image' => [1.5]], 'image.0'],
+    [['image' => ['string']], 'image.0'],
 ]);
