@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
-use App\Http\Resources\PostResource;
+use App\Http\Requests\Admin\StorePostRequest;
+use App\Http\Requests\Admin\UpdatePostRequest;
+use App\Http\Resources\Admin\PostResource;
+use App\Http\Resources\Admin\PostSimpleResource;
 use App\Models\Post;
 use Illuminate\Http\Response;
 
@@ -13,17 +14,20 @@ class PostController extends Controller
 {
     public function index(): Response
     {
+        $paginationLength = pagination_length('post');
+
         return response([
-            'posts' => PostResource::collection(Post::all()->load('images')),
+            'posts' => PostSimpleResource::collection(Post::all())
+                ->paginate($paginationLength),
         ]);
     }
 
-    public function store(StorePostRequest $request): Response
+    public function store(StorePostRequest $request)
     {
         $post = $request->storePost();
 
         return response([
-            'post' => PostResource::make($post->load('images')),
+            'post' => PostResource::make($post->load('images', 'categories')),
             'message' => __('posts.store')
         ]);
     }
@@ -31,26 +35,30 @@ class PostController extends Controller
     public function show(Post $post): Response
     {
         return response([
-            'post' => PostResource::make($post->load('images')),
+            'post' => PostResource::make($post->load('images', 'user', 'categories'))
         ]);
     }
 
     public function update(UpdatePostRequest $request, Post $post): Response
     {
-        $request->updatePost();
+        $post = $request->updatePost();
 
         return response([
-            'post' => PostResource::make($post->fresh()),
+            'post' => PostResource::make($post->load('images', 'categories')),
             'message' => __('posts.update')
         ]);
     }
 
     public function destroy(Post $post): Response
     {
-        $post->remove();
+        if ($post->remove()) {
+            return response([
+                'message' => __('posts.destroy')
+            ]);
+        }
 
         return response([
-            'message' => __('posts.destroy')
-        ]);
+            'message' => __('posts.cant_destroy'),
+        ], 409);
     }
 }

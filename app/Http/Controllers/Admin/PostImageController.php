@@ -3,13 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdatePostImageRequest;
-use App\Http\Resources\PostResource;
+use App\Http\Requests\Admin\StorePostImageRequest;
+use App\Http\Requests\Admin\UpdatePostImageRequest;
+use App\Http\Resources\Admin\PostResource;
 use App\Models\Post;
+use Illuminate\Http\Response;
 
 class PostImageController extends Controller
 {
-    public function update(UpdatePostImageRequest $request, Post $post, string $imageId)
+    public function store(StorePostImageRequest $request, Post $post): Response
+    {
+        $post = $request->storeImages();
+
+        return response([
+            'post' => PostResource::make($post->load('images')),
+            'message' => __('posts.image.store')
+        ]);
+    }
+
+    public function update(UpdatePostImageRequest $request, Post $post, string $imageId): Response
     {
         $post = $request->updateImage();
 
@@ -18,21 +30,18 @@ class PostImageController extends Controller
         }
 
         return response([
-            'post' => PostResource::make($post),
+            'post' => PostResource::make($post->load('images')),
             'message' => __('posts.image.update')
         ]);
     }
 
-    public function destroy(Post $post, string $imageId)
+    public function destroy(Post $post, string $imageId): Response
     {
-        $post = $post->destroyImage($imageId);
-
-        if (! $post) {
+        if (! $post->destroyImage($imageId)) {
             return response('', 404);
         }
 
         return response([
-            'post' => PostResource::make($post),
             'message' => __('posts.image.destroy')
         ]);
     }

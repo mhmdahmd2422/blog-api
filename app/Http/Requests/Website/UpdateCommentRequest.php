@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Website;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -20,6 +20,8 @@ class UpdateCommentRequest extends FormRequest
 
     public function updateComment()
     {
-        return $this->comment->update($this->validated());
+        $this->comment->update($this->validated());
+
+        return $this->comment->fresh();
     }
 }

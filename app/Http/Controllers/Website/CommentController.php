@@ -3,19 +3,27 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCommentRequest;
-use App\Http\Requests\UpdateCommentRequest;
-use App\Http\Resources\CommentResource;
+use App\Http\Middleware\ResourceVisibility;
+use App\Http\Requests\Website\StoreCommentRequest;
+use App\Http\Requests\Website\UpdateCommentRequest;
+use App\Http\Resources\Website\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Response;
 
-class PostCommentController extends Controller
+class CommentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(ResourceVisibility::class);
+    }
     public function index(Post $post): Response
     {
+        $paginationLength = pagination_length('comment');
+
         return response([
-            'comments' => CommentResource::collection($post->comments),
+            'comments' => CommentResource::collection($post->comments->load('user'))
+                ->paginate($paginationLength),
         ]);
     }
 
@@ -24,8 +32,8 @@ class PostCommentController extends Controller
         $comment = $request->storeComment();
 
         return response([
-            'comment' => CommentResource::make($comment),
-            'message' => __('postComments.store')
+            'comment' => CommentResource::make($comment->load('user')),
+            'message' => __('comments.store')
         ]);
     }
 
@@ -38,11 +46,11 @@ class PostCommentController extends Controller
 
     public function update(UpdateCommentRequest $request, Post $post, Comment $comment): Response
     {
-        $request->updateComment();
+        $comment = $request->updateComment();
 
         return response([
             'comment' => CommentResource::make($comment),
-            'message' => __('postComments.update')
+            'message' => __('comments.update')
         ]);
     }
 
@@ -51,7 +59,7 @@ class PostCommentController extends Controller
         $comment->delete();
 
         return response([
-            'message' => __('postComments.destroy')
+            'message' => __('comments.destroy')
         ]);
     }
 }

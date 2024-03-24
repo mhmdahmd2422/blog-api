@@ -46,9 +46,19 @@ class Post extends Model
         return $this->morphMany(Image::class, 'imageable');
     }
 
+    public function oldestImage()
+    {
+        return $this->morphOne(Image::class, 'imageable')->oldestOfMany();
+    }
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
+    }
+
+    public function visibleCategories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class)->withTimestamps()->visible();
     }
 
     public function remove(): bool
@@ -78,7 +88,7 @@ class Post extends Model
         if ($image) {
             $image->remove();
 
-            return $this->load('images');
+            return true;
         }
 
         return false;

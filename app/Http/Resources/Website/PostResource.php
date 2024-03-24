@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Website;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -11,15 +11,12 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => UserResource::make($this->whenLoaded('user')),
             'title' => $this->title,
             'description' => $this->description,
-            'images' => ImageResource::collection($this->whenLoaded('images')),
-            'categories' => CategoryResource::collection($this->categories),
-            'is_visible' => $this->is_visible,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'comments' => CommentResource::collection($this->whenLoaded('comments'))
+            'images' => ImageResource::collection($this->whenLoaded('images')),
+            'categories' => CategoryResource::collection($this->whenLoaded('visibleCategories')),
         ];
     }
 }

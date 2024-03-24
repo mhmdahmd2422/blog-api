@@ -24,7 +24,8 @@
     },
     "autoload": {
         "files": [
-          "app/Helpers/MediaHelper.php"
+          "app/Helpers/MediaHelper.php",
+          "app/Helpers/PaginationHelper.php"
         ],
         "psr-4": {
             "App\\": "app/",

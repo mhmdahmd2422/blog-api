@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,9 +13,8 @@ class UserResource extends JsonResource
           'id' => $this->id,
           'name' => $this->name,
           'email' => $this->email,
-          'posts' => PostResource::collection($this->whenLoaded('posts')),
-          'comments' => CommentResource::collection($this->whenLoaded('comments')),
-          'images' => ImageResource::collection($this->whenLoaded('images'))
+          'posts_count' => $this->whenCounted('posts'),
+          'comments_count' => $this->whenCounted('comments')
         ];
     }
 }

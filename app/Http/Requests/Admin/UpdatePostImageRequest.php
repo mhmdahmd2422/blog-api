@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use App\Models\Image;
 use App\Models\Post;
@@ -17,15 +17,13 @@ class UpdatePostImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'image' => ['required', 'image', 'extensions:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
     public function updateImage()
     {
-        $image = Image::whereHasMorph(
-            'imageable',
-            Post::class,
+        $image = Image::whereHasMorph('imageable', Post::class,
             function (Builder $query) {
                 $query->whereId($this->post->id);
             }
@@ -36,7 +34,7 @@ class UpdatePostImageRequest extends FormRequest
                 'path' => updateImage($this->file('image'), $image->path, 'uploads/posts/')
             ]);
 
-            return $this->post->load('images');
+            return $this->post->fresh();
         }
 
         return false;

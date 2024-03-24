@@ -10,6 +10,9 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        Category::factory()->count(10)->create();
+        Category::factory()->count(10)->sequence(
+            ['is_visible' => true],
+            ['is_visible' => false],
+        )->create();
     }
 }

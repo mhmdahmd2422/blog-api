@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
+use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
 use Illuminate\Http\Response;
 
@@ -13,8 +13,11 @@ class UserController extends Controller
 {
     public function index(): Response
     {
+        $paginationLength = pagination_length('user');
+
         return response([
-           'users' => UserResource::collection(User::all()),
+           'users' => UserResource::collection(User::all())
+               ->paginate($paginationLength),
         ]);
     }
 
@@ -31,13 +34,13 @@ class UserController extends Controller
     public function show(User $user): Response
     {
         return response([
-            'user' => UserResource::make($user),
+            'user' => UserResource::make($user->loadCount('posts', 'comments')),
         ]);
     }
 
     public function update(UpdateUserRequest $request, User $user): Response
     {
-        $request->updateUser();
+        $user = $request->updateUser();
 
         return response([
             'user' => UserResource::make($user),
@@ -47,10 +50,14 @@ class UserController extends Controller
 
     public function destroy(User $user): Response
     {
-        $user->remove();
+        if ($user->remove()) {
+            return response([
+                'message' => __('users.destroy')
+            ]);
+        }
 
         return response([
-            'message' => __('users.destroy')
-        ]);
+            'message' => __('users.cant_destroy'),
+        ], 409);
     }
 }

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -15,15 +16,15 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:25'],
+            'name' => ['sometimes', 'string', 'max:25', Rule::unique('categories')->ignore($this->category->name, 'name')],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => ['sometimes', 'boolean']
         ];
     }
 
-    public function updateCategory(): void
+    public function updateCategory()
     {
-        $category = $this->category->load('image');
+        $category = $this->category;
         $category->update($this->safe()->except('image'));
 
         $this->whenHas('image', function (UploadedFile $image) use ($category) {
@@ -37,5 +38,7 @@ class UpdateCategoryRequest extends FormRequest
                 ]);
             }
         });
+
+        return $category->fresh();
     }
 }

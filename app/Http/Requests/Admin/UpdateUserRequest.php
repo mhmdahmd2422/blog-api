@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -22,8 +23,10 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    public function updateUser(): bool
+    public function updateUser(): User
     {
-        return $this->user->update($this->validated());
+        $this->user->update($this->validated());
+
+        return $this->user->fresh();
     }
 }
