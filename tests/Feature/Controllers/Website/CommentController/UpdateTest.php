@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\Website\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use function Pest\Laravel\{put};
@@ -10,6 +10,13 @@ it('returns not found if comment do not exist for this post', function () {
     $SecondPost = Post::factory()->hasComments(5)->create();
 
     put(route('website.posts.comments.update', [$firstPost, $SecondPost->comments->first()]))
+        ->assertStatus(404);
+});
+
+it('returns not found if comment is for invisible post', function () {
+    $post = Post::factory()->invisible()->hasComments(5)->create();
+
+    put(route('website.posts.comments.update', [$post, $post->comments->first()]))
         ->assertStatus(404);
 });
 
@@ -24,7 +31,7 @@ it('can update a comment for a post', function () {
        ->assertStatus(200)
        ->assertExactJson([
            'comment' => responseData(CommentResource::make($comment)),
-           'message' => __('postComments.update')
+           'message' => __('comments.update')
        ]);
 
    expect($post->comments)

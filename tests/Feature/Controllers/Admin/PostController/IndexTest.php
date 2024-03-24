@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Admin\PostSimpleResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
@@ -14,6 +14,9 @@ it('can get all posts', function () {
     get(route('admin.posts.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'posts' => responseData(PostResource::collection($posts->load('images')))
+            'posts' => responsePaginatedData(
+                PostSimpleResource::collection($posts->load('images')
+                    ->paginate(pagination_length('post')))
+            )
         ]);
 });

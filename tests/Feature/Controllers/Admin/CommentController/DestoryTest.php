@@ -19,7 +19,7 @@ it('can delete a comment for a post', function () {
     delete(route('admin.posts.comments.destroy', [$post, $comment]))
         ->assertStatus(200)
         ->assertExactJson([
-            'message' => __('postComments.destroy')
+            'message' => __('comments.destroy')
         ]);
 
     expect($post->comments)

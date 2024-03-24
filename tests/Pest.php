@@ -12,6 +12,8 @@
 */
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 
 uses(
     Tests\TestCase::class,
@@ -49,4 +51,25 @@ function responseData($resource)
     $resource = $resource->response()->getData(true);
 
     return $resource['data'];
+}
+
+function responsePaginatedData($resource)
+{
+    $resource = $resource->response()->getData(true);
+
+    return $filteredResource = [
+        'current_page' => $resource['meta']['current_page'],
+        'data' => $resource['data'],
+        'first_page_url' => $resource['links']['first'],
+        'from' => $resource['meta']['from'],
+        'last_page' => $resource['meta']['last_page'],
+        'last_page_url' => $resource['links']['last'],
+        'links' => $resource['meta']['links'],
+        'next_page_url' => $resource['links']['next'],
+        'path' => $resource['meta']['path'],
+        'per_page' => $resource['meta']['per_page'],
+        'prev_page_url' => $resource['links']['prev'],
+        'to' => $resource['meta']['to'],
+        'total' => $resource['meta']['total'],
+    ];
 }

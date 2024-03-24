@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\Admin\CommentResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
@@ -9,6 +9,13 @@ it('returns not found if comment do not exist for this post', function () {
     $SecondPost = Post::factory()->hasComments(5)->create();
 
     get(route('website.posts.comments.show', [$firstPost, $SecondPost->comments->first()]))
+        ->assertStatus(404);
+});
+
+it('returns not found if comment is for invisible post', function () {
+    $post = Post::factory()->invisible()->hasComments(5)->create();
+
+    get(route('website.posts.comments.show', [$post, $post->comments->first()]))
         ->assertStatus(404);
 });
 

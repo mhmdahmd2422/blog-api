@@ -12,6 +12,13 @@ it('returns not found if comment do not exist for this post', function () {
         ->assertStatus(404);
 });
 
+it('returns not found if comment is for invisible post', function () {
+    $post = Post::factory()->invisible()->hasComments(5)->create();
+
+    delete(route('website.posts.comments.destroy', [$post, $post->comments->first()]))
+        ->assertStatus(404);
+});
+
 it('can delete a comment for a post', function () {
     $post = Post::factory()->create();
     $comment = Comment::factory()->for($post)->create();
@@ -19,7 +26,7 @@ it('can delete a comment for a post', function () {
     delete(route('website.posts.comments.destroy', [$post, $comment]))
         ->assertStatus(200)
         ->assertExactJson([
-            'message' => __('postComments.destroy')
+            'message' => __('comments.destroy')
         ]);
 
     expect($post->comments)

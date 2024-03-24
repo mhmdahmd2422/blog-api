@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Website\PostSimpleResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
 it('can get all visible posts', function () {
-    Post::factory()->count(20)
+    Post::factory()->count(20)->hasCategories(2)
         ->sequence(
             ['is_visible' => true],
             ['is_visible' => false],
@@ -14,6 +14,9 @@ it('can get all visible posts', function () {
     get(route('website.posts.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'posts' => responseData(PostResource::collection(Post::visible()->get()))
+            'posts' => responsePaginatedData(
+                PostSimpleResource::collection(Post::visible()
+                    ->paginate(pagination_length('post')))
+            )
         ]);
 });

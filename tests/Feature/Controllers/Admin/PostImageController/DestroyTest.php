@@ -1,11 +1,19 @@
 <?php
 
-use App\Http\Resources\PostResource;
 use App\Models\Image;
 use App\Models\Post;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
+
+it('returns not found if image do not exist for this post', function () {
+    $firstPost = Post::factory()->invisible()->hasImages(1)->create();
+    $secondPost = Post::factory()->invisible()->create();
+    $secondPostImage = Image::factory()->for($secondPost, 'imageable')->create();
+
+    delete(route('admin.posts.images.destroy', [$firstPost, $secondPostImage->id]))
+        ->assertStatus(404);
+});
 
 it('can delete a post image', function () {
    $post = Post::factory()->invisible()->create();
@@ -16,10 +24,9 @@ it('can delete a post image', function () {
        'path' => $imagePath
    ]);
 
-   delete(route('admin.posts.image.destroy', [$post, $postImage->id]))
+   delete(route('admin.posts.images.destroy', [$post, $postImage->id]))
        ->assertStatus(200)
        ->assertExactJson([
-           'post' => responseData(PostResource::make($post->load('images'))),
            'message' => __('posts.image.destroy')
        ]);
 
@@ -30,14 +37,4 @@ it('can delete a post image', function () {
    ]);
 
    Storage::assertMissing($imagePath);
-});
-
-it('returns not found if image do not exist for this post', function () {
-    $firstPost = Post::factory()->invisible()->create();
-    $secondPost = Post::factory()->invisible()->create();
-    $firstPostImage = Image::factory()->for($firstPost, 'imageable')->create();
-    $secondPostImage = Image::factory()->for($secondPost, 'imageable')->create();
-
-    delete(route('admin.posts.image.destroy', [$firstPost, $secondPostImage->id]))
-        ->assertStatus(404);
 });

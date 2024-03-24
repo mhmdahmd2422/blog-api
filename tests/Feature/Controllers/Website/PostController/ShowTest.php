@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Website\PostResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
 it('can show a post', function () {
-    $posts = Post::factory()->count(20)
+    $posts = Post::factory()->count(20)->hasCategories(3)
         ->sequence(
             ['is_visible' => true],
             ['is_visible' => false]
@@ -14,7 +14,7 @@ it('can show a post', function () {
     get(route('website.posts.show', $posts->first()))
         ->assertStatus(200)
         ->assertExactJson([
-            'post' => responseData(PostResource::make($posts->first()->load('images')))
+            'post' => responseData(PostResource::make($posts->first()->load('images', 'visibleCategories')))
         ]);
 });
 

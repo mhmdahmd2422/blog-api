@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
 use function Pest\Laravel\{put};
 

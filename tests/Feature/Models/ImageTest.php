@@ -2,7 +2,6 @@
 
 use App\Models\Image;
 use App\Models\Post;
-use App\Models\User;
 
 it('belong to a post', function () {
    $post = Post::factory()->create();

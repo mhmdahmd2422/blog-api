@@ -18,3 +18,11 @@ it('has posts', function () {
         ->toHaveCount(3)
         ->each->toBeInstanceOf(Post::class);
 });
+
+it('has visible local scope', function () {
+    $VisibleCategories = Category::factory()->visible()->count(5)->create();
+    Category::factory()->invisible()->count(5)->create();
+
+    expect(Category::visible()->get()->toArray())
+        ->toEqual($VisibleCategories->toArray());
+});

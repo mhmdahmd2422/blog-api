@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Admin\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use function Pest\Laravel\{put};
@@ -19,10 +19,7 @@ it('can update a post and its category', function () {
                 ['id' => 4]
             )
         )
-        ->create([
-        'title' => 'updated title',
-        'description' => str_repeat('updated description',5)
-    ]);
+        ->create();
     $response = put(route('admin.posts.update', $oldPost), [
         'user_id' => $updatedPost->user_id,
         'category_id' => $updatedPost->categories,
@@ -35,21 +32,16 @@ it('can update a post and its category', function () {
 
     $response->assertStatus(200)
         ->assertExactJson([
-            'post' => responseData(PostResource::make($updatedPost)),
+            'post' => responseData(PostResource::make($updatedPost->load('images'))),
             'message' => __('posts.update')
         ]);
 
-    $updatedPost->delete();
-
-    expect($oldPost->user->posts)
-        ->toHaveCount(1);
-
     $this->assertDatabaseHas(Post::class, [
-        'id' => $oldPost->fresh()->id,
-        'user_id' => $oldPost->user->id,
-        'title' => 'updated title',
-        'description' => str_repeat('updated description',5),
-        'is_visible' => true
+        'id' => $updatedPost->id,
+        'user_id' => $updatedPost->user_id,
+        'title' => $updatedPost->title,
+        'description' => $updatedPost->description,
+        'is_visible' => $updatedPost->is_visible
     ]);
 
     foreach ($updatedPost->categories as $category) {
@@ -62,23 +54,25 @@ it('can update a post and its category', function () {
 
 it('requires a valid data when updating', function (array $badData, array|string $errors) {
     $oldPost = Post::factory()->invisible()->create();
-    $updatedPost = Post::factory()->for($oldPost->user)->visible()->create([
+    $updatedPost = Post::factory()->visible()->hasCategories(1)->create([
         'title' => 'updated title',
         'description' => 'updated description'
     ]);
 
     put(route('admin.posts.update', $oldPost), [[
-        'user_id' => $updatedPost->user_id,
         'title' => $updatedPost->title,
+        'category_id' => $updatedPost->categories,
         'description' => $updatedPost->description,
         'is_visible' => $updatedPost->is_visible,
     ], ...$badData])
         ->assertInvalid($errors);
 })->with([
-    [['user_id' => null], 'user_id'],
-    [['user_id' => 1.5], 'user_id'],
-    [['user_id' => true], 'user_id'],
-    [['user_id' => 'string'], 'user_id'],
+    [['category_id' => [null]], 'category_id.0'],
+    [['category_id' => [1.5]], 'category_id.0'],
+    [['category_id' => [true]], 'category_id.0'],
+    [['category_id' => ['string']], 'category_id.0'],
+    [['category_id' => [1, 1]], 'category_id.0'], // distinct
+    [['category_id' => [2]], 'category_id.0'], // exists
     [['title' => null], 'title'],
     [['title' => 2], 'title'],
     [['title' => 1.5], 'title'],

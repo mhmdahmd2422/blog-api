@@ -1,11 +1,23 @@
 <?php
 
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Admin\PostResource;
 use App\Models\Image;
 use App\Models\Post;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{put};
+
+it('returns not found if image do not exist for this post', function () {
+    $firstPost = Post::factory()->invisible()->hasImages(1)->create();
+    $secondPost = Post::factory()->invisible()->create();
+    $secondPostImage = Image::factory()->for($secondPost, 'imageable')->create();
+    $image = UploadedFile::fake()->image('testImage1.png');
+
+    put(route('admin.posts.images.update', [$firstPost, $secondPostImage->id]), [
+        'image' => $image,
+    ])
+        ->assertStatus(404);
+});
 
 it('can update a post image', function () {
     $post = Post::factory()->invisible()->create();
@@ -18,7 +30,7 @@ it('can update a post image', function () {
         'path' => $oldImagePath
     ]);
 
-    put(route('admin.posts.image.update', [$post, $postImage->id]), [
+    put(route('admin.posts.images.update', [$post, $postImage->id]), [
         'image' => $newImage,
     ])
         ->assertStatus(200)
@@ -41,17 +53,4 @@ it('can update a post image', function () {
 
     Storage::assertExists($newImagePath);
     Storage::assertMissing($oldImagePath);
-});
-
-it('returns not found if image do not exist for this post', function () {
-    $firstPost = Post::factory()->invisible()->create();
-    $secondPost = Post::factory()->invisible()->create();
-    $firstPostImage = Image::factory()->for($firstPost, 'imageable')->create();
-    $secondPostImage = Image::factory()->for($secondPost, 'imageable')->create();
-    $image = UploadedFile::fake()->image('testImage1.png');
-
-    put(route('admin.posts.image.update', [$firstPost, $secondPostImage->id]), [
-        'image' => $image,
-    ])
-        ->assertStatus(404);
 });

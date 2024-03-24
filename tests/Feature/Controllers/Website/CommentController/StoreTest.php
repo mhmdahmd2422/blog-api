@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\Website\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use function Pest\Laravel\{post};
@@ -22,7 +22,7 @@ it('can store comment for post', function () {
     $response->assertStatus(200)
         ->assertExactJson([
             'comment' => responseData(CommentResource::make($comment)),
-            'message' => __('postComments.store')
+            'message' => __('comments.store')
         ]);
 
     expect($post->fresh()->comments)
@@ -38,9 +38,16 @@ it('can store comment for post', function () {
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
     $comment = Comment::factory()->create();
 
-    post(route('website.posts.comments.store', $comment->post), [...$badData])
+    post(route('website.posts.comments.store', $comment->post), [[
+        'user_id' => $comment->user_id,
+        'body' => $comment->body
+    ], ...$badData])
         ->assertInvalid($errors);
 })->with([
+    [['user_id' => null], 'user_id'],
+    [['user_id' => 1.5], 'user_id'],
+    [['user_id' => true], 'user_id'],
+    [['user_id' => 'string'], 'user_id'],
     [['body' => null], 'body'],
     [['body' => 1], 'body'],
     [['body' => 1.5], 'body'],

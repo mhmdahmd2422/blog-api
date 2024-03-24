@@ -36,3 +36,19 @@ it('has categories', function () {
         ->toHaveCount(3)
         ->each->toBeInstanceOf(Category::class);
 });
+
+it('has oldest image', function () {
+    $post = Post::factory()->hasImages(3)->create();
+
+    expect($post->oldestImage)
+        ->toEqual($post->images->sortBy('id')->first());
+});
+
+it('has visible categories', function () {
+    $visibleCategories = Category::factory()->visible()->count(2);
+    $invisibleCategories = Category::factory()->invisible()->count(2);
+    $post = Post::factory()->has($invisibleCategories)->has($visibleCategories)->create();
+
+    expect($post->visibleCategories->makeHidden('pivot')->toArray())
+        ->toEqual(Category::visible()->get()->toArray());
+});

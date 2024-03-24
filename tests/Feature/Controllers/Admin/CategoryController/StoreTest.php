@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\Admin\CategoryResource;
 use App\Models\Category;
 use App\Models\Image;
 use Illuminate\Http\UploadedFile;
@@ -10,6 +10,7 @@ use function Pest\Laravel\{post};
 it('can store a category with image', function () {
     $category = Category::factory()->invisible()->make();
     $image = UploadedFile::fake()->image('testImage.png');
+    $imagePath = 'uploads/categories/' . $image->hashName();
 
     post(route('admin.categories.store'), [
         'name' => $category->name,
@@ -30,7 +31,9 @@ it('can store a category with image', function () {
     ]);
 
     expect($createdCategory->image)
-        ->toEqual(Image::first());
+        ->toEqual(Image::first())
+        ->and($createdCategory->image->path)
+        ->toEqual($imagePath);
 
     $this->assertDatabaseHas(Image::class, [
         'imageable_type' => Category::class,
@@ -38,11 +41,13 @@ it('can store a category with image', function () {
         'path' => $createdCategory->image->path,
     ]);
 
-    Storage::assertExists('uploads/categories/'.$image->hashName());
+    Storage::assertExists($imagePath);
 });
 
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    $category = Category::factory()->invisible()->create();
+    $category = Category::factory()->invisible()->create([
+        'name' => 'testCategory'
+    ]);
 
     post(route('admin.categories.store'), [[
         'name' => $category->name,
@@ -55,11 +60,13 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['name' => 2], 'name'],
     [['name' => 1.5], 'name'],
     [['name' => true], 'name'],
-    [['name' => str_repeat('a', 26)], 'name'],
+    [['name' => str_repeat('a', 26)], 'name'], // max
+    [['name' => 'testCategory'], 'name'], // unique
     [['image' => null], 'image'],
     [['image' => 5], 'image'],
     [['image' => 1.5], 'image'],
     [['image' => 'string'], 'image'],
+    [['image' => UploadedFile::fake()->create('testImage', 2049)], 'image'], // max
     [['is_visible' => null], 'is_visible'],
     [['is_visible' => 5], 'is_visible'],
     [['is_visible' => 1.5], 'is_visible'],

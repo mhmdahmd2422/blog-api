@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\Admin\CategoryResource;
 use App\Models\Category;
 use App\Models\Image;
 use Illuminate\Http\UploadedFile;
@@ -9,9 +9,8 @@ use function Pest\Laravel\{put};
 
 it('can update a post', function () {
     $oldCategory = Category::factory()->invisible()->create();
-    $updatedCategory = Category::factory()->visible()->create([
-        'name' => 'updated name',
-    ]);
+    $updatedCategory = Category::factory()->visible()->make();
+
     $response = put(route('admin.categories.update', $oldCategory), [
         'name' => $updatedCategory->name,
         'is_visible' => $updatedCategory->is_visible,
@@ -21,25 +20,25 @@ it('can update a post', function () {
 
     $response->assertStatus(200)
         ->assertExactJson([
-            'category' => responseData(CategoryResource::make($updatedCategory)),
+            'category' => responseData(CategoryResource::make($updatedCategory->load('image'))),
             'message' => __('categories.update')
         ]);
 
     $updatedCategory->delete();
 
     $this->assertDatabaseHas(Category::class, [
-        'id' => $oldCategory->fresh()->id,
-        'name' => 'updated name',
-        'is_visible' => true
+        'id' => $updatedCategory->id,
+        'name' => $updatedCategory->name,
+        'is_visible' => $updatedCategory->is_visible
     ]);
 });
 
-it('can update image of an existing category', function () {
+it('can update image of an existing category image', function () {
     $category = Category::factory()->invisible()->create();
     $oldImage = UploadedFile::fake()->image('testImage1.png');
-    $oldImagePath = 'uploads/categories/'.$oldImage->hashName();
+    $oldImagePath = 'uploads/categories/' . $oldImage->hashName();
     $newImage = UploadedFile::fake()->image('testImage2.png');
-    $newImagePath = 'uploads/categories/'.$newImage->hashName();
+    $newImagePath = 'uploads/categories/' . $newImage->hashName();
     $oldImage->storeAs('uploads/categories/', $oldImage->hashName());
     Image::factory()->for($category, 'imageable')->create([
         'path' => $oldImagePath
@@ -53,7 +52,7 @@ it('can update image of an existing category', function () {
     ])
         ->assertStatus(200)
         ->assertExactJson([
-            'category' => responseData(CategoryResource::make($category->fresh())),
+            'category' => responseData(CategoryResource::make($category->fresh()->load('image'))),
             'message' => __('categories.update')
         ]);
 
@@ -78,11 +77,41 @@ it('can update image of an existing category', function () {
     Storage::assertMissing($oldImagePath);
 });
 
+it('can add image to an existing category that has no image', function () {
+    $category = Category::factory()->invisible()->create();
+    $image = UploadedFile::fake()->image('testImage1i.png');
+    $imagePath = 'uploads/categories/' . $image->hashName();
+
+
+    expect($category->image)
+        ->toBeEmpty();
+
+    put(route('admin.categories.update', $category), [
+        'image' => $image,
+    ])
+        ->assertStatus(200)
+        ->assertExactJson([
+            'category' => responseData(CategoryResource::make($category->fresh()->load('image'))),
+            'message' => __('categories.update')
+        ]);
+
+    $this->assertDatabaseHas(Image::class, [
+        'imageable_type' => Category::class,
+        'imageable_id' => $category->id,
+        'path' => $imagePath
+    ]);
+
+    expect($category->fresh()->image->path)
+        ->toEqual($imagePath)
+        ->and(Image::all())
+        ->toHaveCount(1);
+
+    Storage::assertExists($imagePath);
+});
+
 it('requires a valid data when updating', function (array $badData, array|string $errors) {
     $oldCategory = Category::factory()->visible()->create();
-    $updatedCategory = Category::factory()->invisible()->create([
-        'name' => 'updated category name',
-    ]);
+    $updatedCategory = Category::factory()->invisible()->create();
 
     put(route('admin.categories.update', $oldCategory), [[
         'name' => $updatedCategory->name,
@@ -100,6 +129,7 @@ it('requires a valid data when updating', function (array $badData, array|string
     [['image' => 5], 'image'],
     [['image' => 1.5], 'image'],
     [['image' => 'string'], 'image'],
+    [['image' => UploadedFile::fake()->create('testImage', 2049)], 'image'], // max
     [['is_visible' => null], 'is_visible'],
     [['is_visible' => 5], 'is_visible'],
     [['is_visible' => 1.5], 'is_visible'],

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\Admin\CommentResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
@@ -18,6 +18,7 @@ it('can show a comment for a post', function () {
     get(route('admin.posts.comments.show', [$post, $post->comments->first()]))
         ->assertStatus(200)
         ->assertExactJson([
-            'comment' => responseData(CommentResource::make($post->comments->first()))
-        ]);
+            'comment' => responseData(CommentResource::make($post->comments->first()->load('user')))
+        ]
+    );
 });

@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Admin\PostResource;
+use App\Models\Category;
 use App\Models\Image;
 use App\Models\Post;
 use Illuminate\Http\UploadedFile;
@@ -19,11 +20,13 @@ it('can store a new post', function () {
     ]);
 
     $post->id = Post::orderBy('id', 'desc')->first()->id;
+//    $post->created_at = Post::orderBy('id', 'desc')->first()->created_at;
+//    $post->updated_at = Post::orderBy('id', 'desc')->first()->updated_at;
 
     $response
         ->assertStatus(200)
-        ->assertJson([
-            'post' => responseData(PostResource::make($post)),
+        ->assertExactJson([
+            'post' => responseData(PostResource::make($post->load('images'))),
             'message' => __('posts.store')
         ]);
 
@@ -43,16 +46,15 @@ it('can store a new post', function () {
 });
 
 it('can store a post with images', function () {
-    $post = Post::factory()->invisible()->hasCategories(3)->create();
+    $post = Post::factory()->invisible()->hasCategories(1)->create();
     $image = UploadedFile::fake()->image('testImage.png');
-    $images = [$image, $image, $image];
 
     $response = post(route('admin.posts.store'), [
         'user_id' => $post->user_id,
         'category_id' => $post->categories,
         'title' => $post->title,
         'description' => $post->description,
-        'image' => $images,
+        'images' => [$image, $image, $image],
         'is_visible' => $post->is_visible
     ]);
 
@@ -87,7 +89,7 @@ it('can store a post with images', function () {
 });
 
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    $post = Post::factory()->invisible()->hasCategories(3)->create();
+    $post = Post::factory()->invisible()->hasCategories(1)->create();
 
     post(route('admin.posts.store'), [[
         'user_id' => $post->user_id,
@@ -107,6 +109,8 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['category_id' => [1.5]], 'category_id.0'],
     [['category_id' => [true]], 'category_id.0'],
     [['category_id' => ['string']], 'category_id.0'],
+    [['category_id' => [1, 1]], 'category_id.0'], // distinct
+    [['category_id' => [2]], 'category_id.0'], // exists
     [['title' => null], 'title'],
     [['title' => 2], 'title'],
     [['title' => 1.5], 'title'],
@@ -123,8 +127,14 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['is_visible' => 5], 'is_visible'],
     [['is_visible' => 1.5], 'is_visible'],
     [['is_visible' => 'string'], 'is_visible'],
-    [['image' => [null]], 'image.0'],
-    [['image' => [5]], 'image.0'],
-    [['image' => [1.5]], 'image.0'],
-    [['image' => ['string']], 'image.0'],
+    [['images' => [null]], 'images.0'],
+    [['images' => [
+        UploadedFile::fake()->image('testImage1'),
+        UploadedFile::fake()->image('testImage2'),
+        UploadedFile::fake()->image('testImage3'),
+    ]], ['images.0', 'images.1', 'images.2']], // max
+    [['images' => [5]], 'images.0'],
+    [['images' => [1.5]], 'images.0'],
+    [['images' => ['string']], 'images.0'],
+    [['images' => [UploadedFile::fake()->create('testImage', 2049)]], 'images.0'], // max size
 ]);

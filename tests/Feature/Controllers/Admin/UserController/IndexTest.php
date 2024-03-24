@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
 use function Pest\Laravel\get;
 
@@ -13,6 +13,8 @@ it('get all users', function () {
     get(route('admin.users.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'users' => responseData(UserResource::collection($users))
+            'users' => responsePaginatedData(
+                UserResource::collection($users->paginate(pagination_length('user')))
+            )
         ]);
 });
