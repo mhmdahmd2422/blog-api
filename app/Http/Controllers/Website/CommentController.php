@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Http\Middleware\ResourceVisibility;
 use App\Http\Requests\Website\StoreCommentRequest;
 use App\Http\Requests\Website\UpdateCommentRequest;
 use App\Http\Resources\Website\CommentResource;
@@ -13,16 +12,12 @@ use Illuminate\Http\Response;
 
 class CommentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(ResourceVisibility::class);
-    }
     public function index(Post $post): Response
     {
         $paginationLength = pagination_length('comment');
 
         return response([
-            'comments' => CommentResource::collection($post->comments->load('user'))
+            'comments' => CommentResource::collection($post->comments()->isBanned(false)->get())
                 ->paginate($paginationLength),
         ]);
     }

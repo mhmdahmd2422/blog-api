@@ -16,7 +16,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:25', Rule::unique('categories')->ignore($this->category->name, 'name')],
+            'name' => ['sometimes', 'string', 'max:25'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => ['sometimes', 'boolean']
         ];
@@ -30,11 +30,13 @@ class UpdateCategoryRequest extends FormRequest
         $this->whenHas('image', function (UploadedFile $image) use ($category) {
             if ($category->image) {
                 $category->image()->update([
-                    'path' => updateImage($image, $category->image->path, 'uploads/categories/')
+                    'path' => updateImage($image, $category->image->path, 'uploads/categories/'),
+                    'is_main' => true
                 ]);
             } else {
                 $category->image()->create([
-                    'path' => uploadImage($image, 'uploads/categories/')
+                    'path' => uploadImage($image, 'uploads/categories/'),
+                    'is_main' => true
                 ]);
             }
         });

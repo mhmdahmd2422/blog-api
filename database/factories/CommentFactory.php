@@ -16,4 +16,11 @@ class CommentFactory extends Factory
             'body' => fake()->sentence(),
         ];
     }
+
+    public function banned(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_banned' => true,
+        ]);
+    }
 }

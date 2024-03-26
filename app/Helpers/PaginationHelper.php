@@ -8,6 +8,9 @@ if (! function_exists('pagination_length')) {
             'post' => 6,
             'comment' => 12,
             'user' => 12,
+            'tag' => 12,
+            'specification' => 12,
+            'place' => 12,
         };
 
         return $length;

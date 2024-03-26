@@ -8,11 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResourceVisibility
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->route('post')) {
@@ -23,6 +18,24 @@ class ResourceVisibility
 
         if ($request->route('category')) {
             if (! $request->category->is_visible) {
+                return response('', 404);
+            }
+        }
+
+        if ($request->route('comment')) {
+            if ($request->comment->is_banned) {
+                return response('', 404);
+            }
+        }
+
+        if ($request->route('tag')) {
+            if (! $request->tag->is_visible) {
+                return response('', 404);
+            }
+        }
+
+        if ($request->route('place')) {
+            if (! $request->place->is_visible) {
                 return response('', 404);
             }
         }
