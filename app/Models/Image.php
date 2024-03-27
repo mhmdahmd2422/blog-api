@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Image extends Model
@@ -14,8 +12,18 @@ class Image extends Model
 
     protected $fillable = [
         'user_id',
-        'path'
+        'path',
+        'is_main'
     ];
+
+    protected $casts = [
+        'is_main' => 'boolean'
+    ];
+
+    public function scopeIsMain($query, bool $is_main = true): void
+    {
+        $query->where('is_main', $is_main);
+    }
 
     public function imageable(): MorphTo
     {

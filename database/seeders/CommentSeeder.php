@@ -15,5 +15,11 @@ class CommentSeeder extends Seeder
              ->recycle(Post::all())
              ->recycle(User::all())
              ->create();
+
+        Comment::factory()->count(50)
+            ->banned()
+            ->recycle(Post::all())
+            ->recycle(User::all())
+            ->create();
     }
 }

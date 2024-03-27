@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('comments', function (Blueprint $table) {
@@ -18,13 +15,11 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Post::class);
             $table->text('body');
+            $table->boolean('is_banned')->default(false);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('comments');

@@ -16,7 +16,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:25', 'unique:categories,name'],
+            'name' => ['required', 'string', 'max:25'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => ['required', 'boolean']
         ];
@@ -28,7 +28,8 @@ class StoreCategoryRequest extends FormRequest
 
         $this->whenHas('image', function (UploadedFile $image) use ($category) {
             $category->image()->create([
-                'path' => uploadImage($image, 'uploads/categories/')
+                'path' => uploadImage($image, 'uploads/categories/'),
+                'is_main' => true
             ]);
         });
 

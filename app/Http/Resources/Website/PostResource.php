@@ -11,11 +11,12 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'title' => $this->title,
             'description' => $this->description,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'images' => ImageResource::collection($this->whenLoaded('images')),
+            'images' => $this->when($this->images->count(), ImageResource::collection($this->whenLoaded('images'))),
             'categories' => CategoryResource::collection($this->whenLoaded('visibleCategories')),
         ];
     }

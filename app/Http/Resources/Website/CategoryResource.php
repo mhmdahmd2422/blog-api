@@ -11,8 +11,9 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'name' => $this->name,
-            'image' => ImageResource::make($this->whenLoaded('image')),
+            'image' => $this->when($this->main_image, ImageResource::make($this->whenLoaded('image', $this->main_image)))
         ];
     }
 }

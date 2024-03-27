@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Models\Image;
 use App\Models\Post;
+use App\Rules\OneMainImage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -17,7 +18,8 @@ class UpdatePostImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'image', 'extensions:jpg,jpeg,png', 'max:2048'],
+            'image' => ['required', 'image', 'extensions:jpg,jpeg,png', 'max:2048', new OneMainImage($this->post)],
+            'is_main' => ['sometimes', 'boolean']
         ];
     }
 
@@ -30,8 +32,14 @@ class UpdatePostImageRequest extends FormRequest
         )->whereId($this->imageId)->first();
 
         if ($image) {
+            if ($this->is_main) {
+                $this->post->main_image->update([
+                    'is_main' => false,
+                ]);
+            }
             $image->update([
-                'path' => updateImage($this->file('image'), $image->path, 'uploads/posts/')
+                'path' => updateImage($this->file('image'), $image->path, 'uploads/posts/'),
+                'is_main' => $this->is_main ??= false,
             ]);
 
             return $this->post->fresh();
