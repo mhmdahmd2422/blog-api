@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Sluggable;
+use App\Traits\HasMorphedImages;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,8 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Post extends Model
 {
-    use HasFactory;
-    use Sluggable;
+    use HasFactory, Sluggable, HasMorphedImages;
 
     protected $fillable = [
         'user_id',
@@ -61,14 +61,14 @@ class Post extends Model
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
 
-    public function visibleCategories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class)->withTimestamps()->visible();
-    }
-
     public function getMainImageAttribute()
     {
         return $this->images()->isMain()->first();
+    }
+
+    public function getVisibleCategoriesAttribute()
+    {
+        return $this->categories()->visible()->get();
     }
 
     public function remove(): bool
@@ -79,26 +79,23 @@ class Post extends Model
             }
         }
 
+        $this->categories()->sync([]);
         $this->comments()->delete();
         $this->delete();
 
         return true;
     }
 
-    public function destroyImage(string $imageId)
+    public function destroyImage(string $imageId): bool
     {
-        $image = Image::whereHasMorph(
-            'imageable',
-            Post::class,
-            function (Builder $query) {
-                $query->whereId($this->id);
-            }
-        )->whereId($imageId)->first();
+        $image = $this->whereHasImage($imageId);
 
         if ($image) {
-            $image->remove();
+            if ($image->is_main && $this->images()->count() == 1) {
+                $image->remove();
 
-            return true;
+                return true;
+            }
         }
 
         return false;

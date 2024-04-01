@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Specification;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
@@ -16,12 +17,12 @@ class UpdateSpecificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:50', Rule::unique('specifications')->ignore($this->specification->name, 'name')],
+            'name' => ['sometimes', 'string', 'max:100', Rule::unique('specifications')->ignore($this->specification->name, 'name')],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
-    public function updateSpecification()
+    public function updateSpecification(): Specification
     {
         $specification = $this->specification;
         $specification->update($this->safe()->except('image'));

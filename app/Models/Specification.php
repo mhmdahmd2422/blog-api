@@ -37,13 +37,15 @@ class Specification extends Model
             $this->image->remove();
         }
 
-        $this->places->each(function ($place) {
-            $this->places()->detach($place->id);
-        });
-
+        $this->places()->sync([]);
         $this->delete();
 
         return true;
+    }
+
+    public function getVisiblePlacesAttribute()
+    {
+        return $this->places()->visible()->get();
     }
 
     public function getIconAttribute()

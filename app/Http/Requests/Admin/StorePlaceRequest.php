@@ -19,18 +19,18 @@ class StorePlaceRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:1000'],
             'is_visible' => ['required', 'boolean'],
-            'images' => ['sometimes', 'max:3', new OneMainImage],
-            'images.*.image' => ['image', 'extensions:jpg,jpeg,png', 'max:2048'],
-            'images.*.is_main' => ['boolean'],
-            'tag_id' => ['sometimes'],
-            'tag_id.*' => ['integer', 'distinct', 'exists:tags,id'],
-            'specifications' => ['required', 'min:1'],
-            'specifications.*.specification_id' => ['integer', 'exists:specifications,id'],
-            'specifications.*.description' => ['string'],
+            'images' => ['sometimes', 'array', 'max:3', new OneMainImage],
+            'images.*.image' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'images.*.is_main' => ['sometimes', 'boolean'],
+            'tag_id' => ['sometimes', 'array'],
+            'tag_id.*' => ['required_with:tag_id', 'integer', 'distinct', 'exists:tags,id'],
+            'specifications' => ['required', 'array', 'min:1'],
+            'specifications.*.specification_id' => ['required_with:specifications', 'integer', 'distinct', 'exists:specifications,id'],
+            'specifications.*.description' => ['required_with:specifications', 'string', 'max:100']
         ];
     }
 
-    public function storePlace()
+    public function storePlace(): Place
     {
         $place = Place::create($this->safe()->except('images'));
 

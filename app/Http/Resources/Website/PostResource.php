@@ -16,8 +16,8 @@ class PostResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'images' => $this->when($this->images->count(), ImageResource::collection($this->whenLoaded('images'))),
-            'categories' => CategoryResource::collection($this->whenLoaded('visibleCategories')),
+            'images' => ImageResource::collection($this->whenLoaded('images')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories', $this->visible_categories)),
         ];
     }
 }

@@ -17,12 +17,12 @@ class PostController extends Controller
         $paginationLength = pagination_length('post');
 
         return response([
-            'posts' => PostSimpleResource::collection(Post::all())
-                ->paginate($paginationLength),
+            'posts' => PostSimpleResource::collection(Post::paginate($paginationLength))
+
         ]);
     }
 
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request): Response
     {
         $post = $request->storePost();
 

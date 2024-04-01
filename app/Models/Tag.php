@@ -41,12 +41,14 @@ class Tag extends Model
 
     public function remove(): bool
     {
-        $this->places->each(function ($place) {
-            $this->places()->detach($place->id);
-        });
-
+        $this->places()->sync([]);
         $this->delete();
 
         return true;
+    }
+
+    public function getVisiblePlacesAttribute()
+    {
+        return $this->places()->visible()->get();
     }
 }

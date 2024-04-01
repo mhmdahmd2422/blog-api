@@ -23,9 +23,9 @@ class Category extends Model
         'is_visible' => 'boolean'
     ];
 
-    public function scopeVisible(Builder $query): void
+    public function scopeVisible(Builder $query, bool $visible = true): void
     {
-        $query->where('is_visible', true);
+        $query->where('is_visible', $visible);
     }
 
     public function posts(): BelongsToMany
@@ -45,17 +45,17 @@ class Category extends Model
 
     public function remove(): bool
     {
+        foreach ($this->posts as $post) {
+            $categories = $post->categories->pluck('id');
+            if ($categories->contains($this->id) && $categories->count() == 1) {
+                return false;
+            }
+            $this->posts()->detach($post->id);
+        }
+
         if ($this->image) {
             $this->image->remove();
         }
-
-        $this->posts->each(function ($post) {
-            $categories = $post->categories->pluck('id');
-            if ($categories->contains($this->id) && $categories->count() == 1) {
-                $post->remove();
-            }
-            $this->posts()->detach($post->id);
-        });
 
         $this->delete();
 

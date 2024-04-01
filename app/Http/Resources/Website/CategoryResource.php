@@ -13,7 +13,7 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
-            'image' => $this->when($this->main_image, ImageResource::make($this->whenLoaded('image', $this->main_image)))
+            'main_image' => ImageResource::make($this->whenLoaded('image', $this->main_image))
         ];
     }
 }

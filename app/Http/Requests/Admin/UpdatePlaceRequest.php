@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Place;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePlaceRequest extends FormRequest
@@ -17,15 +18,15 @@ class UpdatePlaceRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:100'],
             'description' => ['sometimes', 'string', 'max:1000'],
             'is_visible' => ['sometimes', 'boolean'],
-            'tag_id' => ['sometimes'],
-            'tag_id.*' => ['integer', 'distinct', 'exists:tags,id'],
-            'specifications' => ['sometimes', 'min:1'],
-            'specifications.*.specification_id' => ['integer', 'exists:specifications,id'],
-            'specifications.*.description' => ['string'],
+            'tag_id' => ['sometimes', 'array'],
+            'tag_id.*' => ['required_with:tag_id', 'integer', 'distinct', 'exists:tags,id'],
+            'specifications' => ['sometimes', 'array', 'min:1'],
+            'specifications.*.specification_id' => ['required_with:specifications', 'integer', 'distinct', 'exists:specifications,id'],
+            'specifications.*.description' => ['required_with:specifications', 'string', 'max:100'],
         ];
     }
 
-    public function updatePlace()
+    public function updatePlace(): Place
     {
         $this->place->update($this->validated());
 

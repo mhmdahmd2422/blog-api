@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasMorphedImages;
 use App\Traits\Sluggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,8 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Place extends Model
 {
-    use HasFactory;
-    use Sluggable;
+    use HasFactory, Sluggable, HasMorphedImages;
 
     protected $fillable = [
         'name',
@@ -63,33 +63,23 @@ class Place extends Model
             }
         }
 
-        $this->specifications->each(function ($specification) {
-            $this->specifications()->detach($specification->id);
-        });
-
-        $this->tags->each(function ($tag) {
-            $this->tags()->detach($tag->id);
-        });
-
+        $this->specifications()->sync([]);
+        $this->tags()->sync([]);
         $this->delete();
 
         return true;
     }
 
-    public function destroyImage(string $imageId)
+    public function destroyImage(string $imageId): bool
     {
-        $image = Image::whereHasMorph(
-            'imageable',
-            Place::class,
-            function (Builder $query) {
-                $query->whereId($this->id);
-            }
-        )->whereId($imageId)->first();
+        $image = $this->whereHasImage($imageId);
 
         if ($image) {
-            $image->remove();
+            if ($image->is_main && $this->images()->count() == 1) {
+                $image->remove();
 
-            return true;
+                return true;
+            }
         }
 
         return false;
@@ -98,6 +88,11 @@ class Place extends Model
     public function getMainImageAttribute()
     {
         return $this->images()->isMain()->first();
+    }
+
+    public function getVisibleTagsAttribute()
+    {
+        return $this->tags()->visible()->get();
     }
 
     public function slugAttribute()

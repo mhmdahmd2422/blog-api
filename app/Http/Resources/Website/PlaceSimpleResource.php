@@ -13,7 +13,7 @@ class PlaceSimpleResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
-            'image' => $this->when($this->main_image, ImageResource::make($this->main_image)),
+            'main_image' => ImageResource::make($this->whenLoaded('images', $this->main_image))
         ];
     }
 }

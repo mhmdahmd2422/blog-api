@@ -22,7 +22,7 @@ class StoreCategoryRequest extends FormRequest
         ];
     }
 
-    public function storeCategory()
+    public function storeCategory(): Category
     {
         $category = Category::create($this->safe()->except('image'));
 

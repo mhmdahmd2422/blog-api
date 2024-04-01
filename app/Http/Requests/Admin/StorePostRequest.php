@@ -16,19 +16,19 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
-            'category_id' => ['required'],
-            'category_id.*' => ['integer', 'distinct', 'exists:categories,id'],
-            'title' => ['required', 'string', 'min:10', 'max:255'],
-            'description' => ['required', 'string', 'min:50', 'max:2000'],
-            'images' => ['sometimes', 'max:3', new OneMainImage],
-            'images.*.image' => ['image', 'extensions:jpg,jpeg,png', 'max:2048'],
-            'images.*.is_main' => ['boolean'],
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'category_id' => ['required', 'array'],
+            'category_id.*' => ['required_with:category_id', 'integer', 'distinct', 'exists:categories,id'],
+            'title' => ['required', 'string', 'min:5', 'max:255'],
+            'description' => ['required', 'string', 'max:2000'],
+            'images' => ['sometimes', 'array', 'max:3', new OneMainImage],
+            'images.*.image' => ['required_with:images', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'images.*.is_main' => ['sometimes', 'boolean'],
             'is_visible' => ['required', 'boolean']
         ];
     }
 
-    public function storePost()
+    public function storePost(): Post
     {
         $post = Post::create($this->safe()->except('images'));
 

@@ -12,6 +12,7 @@ class TagResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'places' => PlaceSimpleResource::collection($this->whenLoaded('places', $this->visible_places))
         ];
     }
 }

@@ -14,6 +14,7 @@ class CommentFactory extends Factory
             'user_id' => User::factory(),
             'post_id' => Post::factory(),
             'body' => fake()->sentence(),
+            'is_banned' => false,
         ];
     }
 

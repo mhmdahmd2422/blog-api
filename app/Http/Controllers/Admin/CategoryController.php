@@ -17,8 +17,8 @@ class CategoryController extends Controller
         $paginationLength = pagination_length('category');
 
         return response([
-            'categories' => CategoryResource::collection(Category::all()->load('image'))
-                ->paginate($paginationLength)
+            'categories' => CategoryResource::collection(Category::with('image')
+                ->paginate($paginationLength))
         ]);
     }
 

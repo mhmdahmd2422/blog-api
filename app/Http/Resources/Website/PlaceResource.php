@@ -14,8 +14,8 @@ class PlaceResource extends JsonResource
             'slug' => $this->slug,
             'name' => $this->title,
             'description' => $this->description,
-            'images' => $this->when($this->images->count(), ImageResource::collection($this->whenLoaded('images'))),
-            'tags' => $this->when($this->tags->count(), TagResource::collection($this->whenLoaded('tags'))),
+            'images' => ImageResource::collection($this->whenLoaded('images')),
+            'tags' => TagResource::collection($this->whenLoaded('tags', $this->visibleTags)),
             'specifications' => SpecificationResource::collection($this->whenLoaded('specifications')),
         ];
     }

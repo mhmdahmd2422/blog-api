@@ -42,9 +42,9 @@ class User extends Authenticatable
 
     public function remove(): bool
     {
-        $this->posts->each(function ($post) {
-            $post->remove();
-        });
+        if ($this->posts->isNotEmpty()) {
+            return false;
+        }
 
         $this->delete();
 

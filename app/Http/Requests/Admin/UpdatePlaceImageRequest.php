@@ -18,12 +18,12 @@ class UpdatePlaceImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'image', 'extensions:jpg,jpeg,png', 'max:2048', new OneMainImage($this->place)],
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048', new OneMainImage($this->place)],
             'is_main' => ['sometimes', 'boolean']
         ];
     }
 
-    public function updateImage()
+    public function updateImage(): Place|bool
     {
         $image = Image::whereHasMorph('imageable', Place::class,
             function (Builder $query) {

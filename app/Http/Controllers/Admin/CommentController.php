@@ -34,6 +34,7 @@ class CommentController extends Controller
 
         return response([
             'comment' => CommentResource::make($comment->load('user')),
+            'message' => __('comments.update')
         ]);
     }
 

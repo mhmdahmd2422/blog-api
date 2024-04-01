@@ -15,15 +15,15 @@ class PostController extends Controller
         $paginationLength = pagination_length('post');
 
         return response([
-            'posts' => PostSimpleResource::collection(Post::visible()->get())
-                ->paginate($paginationLength),
+            'posts' => PostSimpleResource::collection(Post::visible()
+                ->paginate($paginationLength))
         ]);
     }
 
     public function show(Post $post): Response
     {
         return response([
-            'post' => PostResource::make($post->load('images', 'visibleCategories')),
+            'post' => PostResource::make($post->load('images', 'categories')),
         ]);
     }
 }

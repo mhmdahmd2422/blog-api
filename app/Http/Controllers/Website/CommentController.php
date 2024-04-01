@@ -17,8 +17,8 @@ class CommentController extends Controller
         $paginationLength = pagination_length('comment');
 
         return response([
-            'comments' => CommentResource::collection($post->comments()->isBanned(false)->get())
-                ->paginate($paginationLength),
+            'comments' => CommentResource::collection($post->comments()->isBanned(false)
+                ->with('user')->paginate($paginationLength))
         ]);
     }
 
@@ -35,7 +35,7 @@ class CommentController extends Controller
     public function show(Post $post, Comment $comment): Response
     {
         return response([
-            'comment' => CommentResource::make($comment),
+            'comment' => CommentResource::make($comment->load('user')),
         ]);
     }
 

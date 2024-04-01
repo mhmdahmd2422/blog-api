@@ -17,8 +17,8 @@ class PlaceController extends Controller
         $paginationLength = pagination_length('place');
 
         return response([
-            'places' => PlaceSimpleResource::collection(Place::all()->load('images', 'tags', 'specifications'))
-                ->paginate($paginationLength)
+            'places' => PlaceSimpleResource::collection(Place::with('images', 'tags', 'specifications')
+                ->paginate($paginationLength))
         ]);
     }
 

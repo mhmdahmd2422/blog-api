@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Validation\Rule;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -22,7 +22,7 @@ class UpdateCategoryRequest extends FormRequest
         ];
     }
 
-    public function updateCategory()
+    public function updateCategory(): Category
     {
         $category = $this->category;
         $category->update($this->safe()->except('image'));

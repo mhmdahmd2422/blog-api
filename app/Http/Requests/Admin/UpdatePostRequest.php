@@ -15,10 +15,10 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['sometimes'],
-            'category_id.*' => ['integer', 'distinct', 'exists:categories,id'],
-            'title' => ['sometimes', 'string', 'min:10', 'max:255'],
-            'description' => ['sometimes', 'string', 'min:50', 'max:2000'],
+            'category_id' => ['sometimes', 'array'],
+            'category_id.*' => ['required_with:category_id', 'integer', 'distinct', 'exists:categories,id'],
+            'title' => ['sometimes', 'string', 'min:5', 'max:255'],
+            'description' => ['sometimes', 'string', 'max:2000'],
             'is_visible' => ['sometimes', 'boolean']
         ];
     }

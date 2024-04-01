@@ -14,16 +14,15 @@ class SpecificationController extends Controller
         $paginationLength = pagination_length('specification');
 
         return response([
-            'specifications' => SpecificationResource::collection(Specification::all()->load('image'))
-                ->paginate($paginationLength)
+            'specifications' => SpecificationResource::collection(Specification::with('image')
+                ->paginate($paginationLength))
         ]);
     }
 
     public function show(Specification $specification): Response
     {
         return response([
-            'specification' => SpecificationResource::make($specification->load('image')),
+            'specification' => SpecificationResource::make($specification->load('image', 'places')),
         ]);
     }
-
 }

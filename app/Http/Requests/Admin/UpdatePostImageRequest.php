@@ -18,14 +18,15 @@ class UpdatePostImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'image', 'extensions:jpg,jpeg,png', 'max:2048', new OneMainImage($this->post)],
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048', new OneMainImage($this->post)],
             'is_main' => ['sometimes', 'boolean']
         ];
     }
 
-    public function updateImage()
+    public function updateImage(): Post|bool
     {
-        $image = Image::whereHasMorph('imageable', Post::class,
+        $image = Image::whereHasMorph('imageable',
+            Post::class,
             function (Builder $query) {
                 $query->whereId($this->post->id);
             }
@@ -37,9 +38,10 @@ class UpdatePostImageRequest extends FormRequest
                     'is_main' => false,
                 ]);
             }
+
             $image->update([
                 'path' => updateImage($this->file('image'), $image->path, 'uploads/posts/'),
-                'is_main' => $this->is_main ??= false,
+                'is_main' => $this->is_main ??= $image->is_main,
             ]);
 
             return $this->post->fresh();

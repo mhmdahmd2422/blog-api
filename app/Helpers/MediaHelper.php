@@ -8,7 +8,7 @@ if (! function_exists('uploadImage')) {
     {
         $image->store($path);
 
-        return $path.$image->hashName();
+        return $path . $image->hashName();
     }
 }
 

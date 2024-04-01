@@ -14,9 +14,9 @@ class PostSimpleResource extends JsonResource
             'slug' => $this->slug,
             'title' => $this->title,
             'created_at' => $this->created_at,
-            'image' => $this->when($this->main_image, ImageResource::make($this->main_image)),
+            'image' => ImageResource::make($this->main_image),
             'images_count' => $this->images()->count(),
-            'categories_count' => $this->visibleCategories()->count(),
+            'categories_count' => $this->visible_categories->count(),
             'comments_count' => $this->comments()->count()
         ];
     }

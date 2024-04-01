@@ -10,6 +10,7 @@ class TagFactory extends Factory
     {
         return [
             'name' => fake()->word(),
+            'is_visible' => true
         ];
     }
 

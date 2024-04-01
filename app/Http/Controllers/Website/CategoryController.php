@@ -15,8 +15,8 @@ class CategoryController extends Controller
         $paginationLength = pagination_length('category');
 
         return response([
-            'categories' => CategoryResource::collection(Category::visible()->get())
-                ->paginate($paginationLength)
+            'categories' => CategoryResource::collection(Category::visible()
+                ->paginate($paginationLength))
         ]);
     }
 
@@ -24,8 +24,8 @@ class CategoryController extends Controller
     {
         return response([
             'category' => CategoryResource::make($category->load('image')),
-            'posts' => PostSimpleResource::collection($category->posts()->visible()->get())
-                ->paginate(pagination_length('post'))
+            'posts' => PostSimpleResource::collection($category->posts()->visible()
+                ->paginate(pagination_length('post')))
         ]);
     }
 }

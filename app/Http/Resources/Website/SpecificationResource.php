@@ -12,10 +12,9 @@ class SpecificationResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->whenPivotLoaded('place_specification', function () {
-                return $this->pivot->description;
-            }),
-            'icon' => $this->when($this->icon, ImageResource::make($this->whenLoaded('image', $this->icon)))
+            'description' => $this->whenPivotLoaded('place_specification', fn() => $this->pivot->description),
+            'icon' => ImageResource::make($this->whenLoaded('image', $this->icon)),
+            'places' => PlaceSimpleResource::collection($this->whenLoaded('places', $this->visible_places))
         ];
     }
 }

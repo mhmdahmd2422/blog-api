@@ -12,8 +12,6 @@ class UserResource extends JsonResource
         return [
           'id' => $this->id,
           'name' => $this->name,
-          'posts' => PostResource::collection($this->whenLoaded('posts')),
-          'comments' => CommentResource::collection($this->whenLoaded('comments'))
         ];
     }
 }

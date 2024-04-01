@@ -12,4 +12,18 @@ class ImageFactory extends Factory
             'path' => 'public/images/placeholder.png'
         ];
     }
+
+    public function is_main(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_main' => true,
+        ]);
+    }
+
+    public function not_main(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_main' => false,
+        ]);
+    }
 }

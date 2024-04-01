@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Website;
 
+use App\Models\Comment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCommentRequest extends FormRequest
@@ -14,11 +15,11 @@ class UpdateCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => ['sometimes', 'string', 'min:10', 'max:1500']
+            'body' => ['sometimes', 'string', 'max:1500']
         ];
     }
 
-    public function updateComment()
+    public function updateComment(): Comment
     {
         $this->comment->update($this->validated());
 

@@ -12,12 +12,11 @@ class MaxAllowedImages implements Rule
         protected Model $model,
         protected int $max_allowed
     ) {
-
     }
 
     public function passes($attribute, $value): bool
     {
-        return $this->model->images->count() + count($value) <= $this->max_allowed;
+        return $this->model->images?->count() + count($value) <= $this->max_allowed;
     }
 
     public function message(): string
