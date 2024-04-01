@@ -7,7 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
-it('can delete a category with its image', function () {
+it('can delete a category', function () {
     $testImage = UploadedFile::fake()->image('testImage.png');
     $testImagePath = 'uploads/categories/'.$testImage->hashName();
     $category = Category::factory()->has(
@@ -38,26 +38,22 @@ it('can delete a category with its image', function () {
     Storage::assertMissing($testImagePath);
 });
 
-it('can delete a category with its single-category posts', function () {
+it('can not delete a category with its single-category posts', function () {
     $category = Category::factory()->invisible()->hasPosts(3)->create();
 
     expect($category->posts)
         ->toHaveCount(3);
 
     delete(route('admin.categories.destroy', $category))
-        ->assertStatus(200)
-        ->assertExactJson([
-            'message' => __('categories.destroy')
-        ]
-    );
+        ->assertStatus(409);
 
-    $this->assertDatabaseMissing(Category::class, [
+    $this->assertDatabaseHas(Category::class, [
         'id' => $category->id,
         'name' => $category->name
     ]);
 
     foreach ($category->posts as $post) {
-        $this->assertDatabaseMissing(Post::class, [
+        $this->assertDatabaseHas(Post::class, [
             'id' => $post->id,
             'user_id' => $post->user_id,
             'title' => $post->title,
@@ -65,7 +61,7 @@ it('can delete a category with its single-category posts', function () {
         ]);
 
         foreach ($post->categories as $category) {
-            $this->assertDatabaseMissing('category_post', [
+            $this->assertDatabaseHas('category_post', [
                 'category_id' => $category->id,
                 'post_id' => $post->id
             ]);

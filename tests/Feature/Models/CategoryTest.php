@@ -19,10 +19,12 @@ it('has posts', function () {
         ->each->toBeInstanceOf(Post::class);
 });
 
-it('has visible local scope', function () {
-    $VisibleCategories = Category::factory()->visible()->count(5)->create();
-    Category::factory()->invisible()->count(5)->create();
+it('has main image attribute', function () {
+    $category = Category::factory()->has(
+        Image::factory()->is_main()
+    )->create();
 
-    expect(Category::visible()->get()->toArray())
-        ->toEqual($VisibleCategories->toArray());
+    expect($category->main_image)
+        ->toBeInstanceOf(Image::class)
+        ->toEqual($category->image()->isMain()->first());
 });

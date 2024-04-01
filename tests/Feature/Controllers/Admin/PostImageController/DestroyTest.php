@@ -20,7 +20,7 @@ it('can delete a post image', function () {
    $image = UploadedFile::fake()->image('testImage');
    $image->storeAs('uploads/posts/', $image->hashName());
    $imagePath = 'uploads/posts/'.$image->hashName();
-   $postImage = Image::factory()->for($post, 'imageable')->create([
+   $postImage = Image::factory()->is_main()->for($post, 'imageable')->create([
        'path' => $imagePath
    ]);
 
@@ -37,4 +37,15 @@ it('can delete a post image', function () {
    ]);
 
    Storage::assertMissing($imagePath);
+});
+
+it('can not delete a post main image if there are other images attached', function () {
+    $post = Post::factory()->invisible()->create();
+    Image::factory()->count(2)->for($post, 'imageable')->sequence(
+        ['is_main' => true],
+        ['is_main' => false]
+    )->create();
+
+    delete(route('admin.posts.images.destroy', [$post, $post->images()->first()]))
+        ->assertStatus(404);
 });

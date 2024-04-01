@@ -13,7 +13,7 @@ it('get all users', function () {
     get(route('admin.users.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'users' => responsePaginatedData(
+            'users' => responseData(
                 UserResource::collection($users->paginate(pagination_length('user')))
             )
         ]);

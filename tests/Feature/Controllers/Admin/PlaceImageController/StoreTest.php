@@ -1,20 +1,20 @@
 <?php
 
-use App\Http\Resources\Admin\PostResource;
+use App\Http\Resources\Admin\PlaceResource;
 use App\Models\Image;
-use App\Models\Post;
+use App\Models\Place;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\post;
 
-it('can add images to existing post', function () {
-   $post = Post::factory()->invisible()->create();
+it('can add images to an existing place', function () {
+   $place = Place::factory()->invisible()->create();
    $image = UploadedFile::fake()->image('testImage.png');
 
-   expect($post->images)
+   expect($place->images)
        ->toHaveCount(0);
 
-   post(route('admin.posts.images.store', $post), [
+   post(route('admin.places.images.store', $place), [
        'images' => [
            ['image' => $image],
            ['image' => $image, 'is_main' => true]
@@ -22,14 +22,15 @@ it('can add images to existing post', function () {
    ])
        ->assertStatus(200)
        ->assertJson([
-           'post' => responseData(PostResource::make($post->load('images'))),
-           'message' => __('posts.image.store')
+           'place' => responseData(PlaceResource::make($place->load('images'))),
+           'message' => __('places.image.store')
        ]);
 
-   foreach ($post->images as $image) {
+
+   foreach ($place->images as $image) {
        $this->assertDatabaseHas(Image::class, [
-           'imageable_type' => Post::class,
-           'imageable_id' => $post->id,
+           'imageable_type' => Place::class,
+           'imageable_id' => $place->id,
            'path' => $image->path,
        ]);
 
@@ -38,9 +39,9 @@ it('can add images to existing post', function () {
 });
 
 it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    $post = Post::factory()->invisible()->create();
+    $place = Place::factory()->invisible()->create();
 
-    post(route('admin.posts.images.store', $post), [[
+    post(route('admin.places.images.store', $place), [[
         'images' => [
             'image' => UploadedFile::fake()->image('testImage'),
             'is_main' => 1

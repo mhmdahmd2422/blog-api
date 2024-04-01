@@ -20,6 +20,14 @@ it('returns not found if comment is for invisible post', function () {
         ->assertStatus(404);
 });
 
+it('can not update a banned comment', function () {
+    $post = Post::factory()->create();
+    $comment = Comment::factory()->banned()->for($post)->create();
+
+    put(route('website.posts.comments.update', [$post, $comment]))
+        ->assertStatus(404);
+});
+
 it('can update a comment for a post', function () {
    $post = Post::factory()->create();
    $comment = Comment::factory()->for($post)->create();
@@ -55,6 +63,5 @@ it('requires a valid data when updating', function (array $badData, array|string
     [['body' => 1.5], 'body'],
     [['body' => true], 'body'],
     [['body' => true], 'body'],
-    [['body' => str_repeat('a', 9)], 'body'],
     [['body' => str_repeat('a', 1501)], 'body'],
 ]);

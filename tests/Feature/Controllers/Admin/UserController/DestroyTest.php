@@ -5,10 +5,17 @@ use App\Models\Post;
 use App\Models\User;
 use function Pest\Laravel\{delete};
 
-it('can delete a user with all child models', function () {
+it('can not delete a user who has posts', function () {
     $user = User::factory()->create();
-    $posts = Post::factory()->count(3)
-        ->for($user)->hasComments(5)->create();
+    Post::factory()->for($user)->create();
+
+    delete(route('admin.users.destroy', $user))
+        ->assertStatus(409);
+});
+
+it('can delete a user who has comments only and delete his comments', function () {
+    $user = User::factory()->create();
+    Comment::factory()->count(3)->for($user)->hasPost()->create();
 
     delete(route('admin.users.destroy', $user))
         ->assertStatus(200)
@@ -20,15 +27,6 @@ it('can delete a user with all child models', function () {
         'name' => $user->name,
         'email' => $user->email,
     ]);
-
-    foreach ($posts as $post) {
-        $this->assertDatabaseMissing(Post::class, [
-            'id' => $post->id,
-            'title' => $post->title,
-            'description' => $post->description,
-            'is_visible' => $post->is_visible
-        ]);
-    }
 
     foreach ($user->comments as $comment) {
         $this->assertDatabaseMissing(Comment::class, [

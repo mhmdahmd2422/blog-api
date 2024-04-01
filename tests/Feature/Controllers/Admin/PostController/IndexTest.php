@@ -5,7 +5,7 @@ use App\Models\Post;
 use function Pest\Laravel\{get};
 
 it('can get all posts', function () {
-    $posts = Post::factory()->count(20)
+    $posts = Post::factory()->count(20)->hasImages(3)
         ->sequence(
             ['is_visible' => true],
             ['is_visible' => false],
@@ -14,7 +14,7 @@ it('can get all posts', function () {
     get(route('admin.posts.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'posts' => responsePaginatedData(
+            'posts' => responseData(
                 PostSimpleResource::collection($posts->load('images')
                     ->paginate(pagination_length('post')))
             )

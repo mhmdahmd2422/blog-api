@@ -7,7 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{put};
 
-it('can update a post', function () {
+it('can update a category', function () {
     $oldCategory = Category::factory()->invisible()->create();
     $updatedCategory = Category::factory()->visible()->make();
 
@@ -17,6 +17,7 @@ it('can update a post', function () {
     ]);
 
     $updatedCategory->id = $oldCategory->fresh()->id;
+    $updatedCategory->slug = $oldCategory->fresh()->slug;
 
     $response->assertStatus(200)
         ->assertExactJson([
@@ -79,7 +80,7 @@ it('can update image of an existing category image', function () {
 
 it('can add image to an existing category that has no image', function () {
     $category = Category::factory()->invisible()->create();
-    $image = UploadedFile::fake()->image('testImage1i.png');
+    $image = UploadedFile::fake()->image('testImage.png');
     $imagePath = 'uploads/categories/' . $image->hashName();
 
 

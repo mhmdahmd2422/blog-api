@@ -37,14 +37,18 @@ it('has categories', function () {
         ->each->toBeInstanceOf(Category::class);
 });
 
-it('has oldest image', function () {
-    $post = Post::factory()->hasImages(3)->create();
+it('has main image attribute', function () {
+    $post = Post::factory()->has(
+        Image::factory()->is_main()
+    )->create();
 
-    expect($post->oldestImage)
-        ->toEqual($post->images->sortBy('id')->first());
+    expect($post->main_image)
+        ->toBeInstanceOf(Image::class)
+        ->toEqual($post->images()->isMain()->first());
 });
 
-it('has visible categories', function () {
+
+it('has visible categories attribute', function () {
     $visibleCategories = Category::factory()->visible()->count(2);
     $invisibleCategories = Category::factory()->invisible()->count(2);
     $post = Post::factory()->has($invisibleCategories)->has($visibleCategories)->create();

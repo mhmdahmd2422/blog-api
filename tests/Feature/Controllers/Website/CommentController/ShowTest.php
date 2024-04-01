@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Resources\Admin\CommentResource;
+use App\Http\Resources\Website\CommentResource;
+use App\Models\Comment;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
@@ -25,6 +26,14 @@ it('can show a comment for a post', function () {
     get(route('website.posts.comments.show', [$post, $post->comments->first()]))
         ->assertStatus(200)
         ->assertExactJson([
-            'comment' => responseData(CommentResource::make($post->comments->first()))
+            'comment' => responseData(CommentResource::make($post->comments->first()->load('user')))
         ]);
+});
+
+it('can not show a banned comment for a post', function () {
+    $post = Post::factory()->create();
+    $comment = Comment::factory()->banned()->for($post)->create();
+
+    get(route('website.posts.comments.show', [$post, $comment]))
+        ->assertStatus(404);
 });

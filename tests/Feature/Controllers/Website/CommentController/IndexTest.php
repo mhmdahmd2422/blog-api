@@ -1,17 +1,19 @@
 <?php
 
 use App\Http\Resources\Website\CommentResource;
+use App\Models\Comment;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
 it('can get all comments for a post', function (){
-   $post = Post::factory()->hasComments(10)->create();
+   $post = Post::factory()->hasComments(2)
+       ->has(Comment::factory()->count(2)->banned())->create();
 
    get(route('website.posts.comments.index', $post))
        ->assertStatus(200)
        ->assertExactJson([
-           'comments' => responsePaginatedData(
-               CommentResource::collection($post->comments->load('user')
+           'comments' => responseData(
+               CommentResource::collection($post->comments()->isBanned(false)->with('user')
                    ->paginate(pagination_length('comment')))
            )
        ]);

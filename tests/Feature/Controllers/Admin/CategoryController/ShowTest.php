@@ -6,14 +6,14 @@ use App\Models\Category;
 use function Pest\Laravel\{get};
 
 it('can show a category with its assigned posts', function () {
-   $categories = Category::factory()->count(10)->invisible()->hasPosts(10)->create();
+   $category = Category::factory()->invisible()->hasPosts(10)->create();
 
-    get(route('admin.categories.show', $categories->first()))
+    get(route('admin.categories.show', $category))
         ->assertStatus(200)
         ->assertExactJson([
-            'category' => responseData(CategoryResource::make($categories->first()->load('image'))),
+            'category' => responseData(CategoryResource::make($category->load('image'))),
             'posts' => responsePaginatedData(
-                PostSimpleResource::collection($categories->first()->posts
+                PostSimpleResource::collection($category->posts
                     ->paginate(pagination_length('post')))
             )
         ]);

@@ -19,6 +19,14 @@ it('returns not found if comment is for invisible post', function () {
         ->assertStatus(404);
 });
 
+it('can not delete a banned comment', function () {
+    $post = Post::factory()->create();
+    $comment = Comment::factory()->banned()->for($post)->create();
+
+    delete(route('website.posts.comments.destroy', [$post, $comment]))
+        ->assertStatus(404);
+});
+
 it('can delete a comment for a post', function () {
     $post = Post::factory()->create();
     $comment = Comment::factory()->for($post)->create();

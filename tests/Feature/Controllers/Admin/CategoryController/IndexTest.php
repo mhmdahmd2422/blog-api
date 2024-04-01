@@ -16,7 +16,7 @@ it('can get all categories', function () {
    get(route('admin.categories.index'))
        ->assertStatus(200)
        ->assertExactJson([
-           'categories' => responsePaginatedData(
+           'categories' => responseData(
                CategoryResource::collection($categories->load('image')
                    ->paginate($paginationLength))
            )

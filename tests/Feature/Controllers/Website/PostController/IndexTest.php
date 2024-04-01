@@ -14,7 +14,7 @@ it('can get all visible posts', function () {
     get(route('website.posts.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'posts' => responsePaginatedData(
+            'posts' => responseData(
                 PostSimpleResource::collection(Post::visible()
                     ->paginate(pagination_length('post')))
             )

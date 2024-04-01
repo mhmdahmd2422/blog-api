@@ -5,7 +5,7 @@ use App\Models\Category;
 use App\Models\Post;
 use function Pest\Laravel\{put};
 
-it('can update a post and its category', function () {
+it('can update a post', function () {
     $oldPost = Post::factory()->invisible()->has(
         Category::factory()->count(2)->sequence(
             ['id' => 1],
@@ -22,13 +22,14 @@ it('can update a post and its category', function () {
         ->create();
     $response = put(route('admin.posts.update', $oldPost), [
         'user_id' => $updatedPost->user_id,
-        'category_id' => $updatedPost->categories,
+        'category_id' => $updatedPost->categories->pluck('id')->toArray(),
         'title' => $updatedPost->title,
         'description' => $updatedPost->description,
         'is_visible' => $updatedPost->is_visible,
     ]);
 
     $updatedPost->id = $oldPost->fresh()->id;
+    $updatedPost->slug = $oldPost->fresh()->slug;
 
     $response->assertStatus(200)
         ->assertExactJson([
@@ -67,6 +68,10 @@ it('requires a valid data when updating', function (array $badData, array|string
     ], ...$badData])
         ->assertInvalid($errors);
 })->with([
+    [['category_id' => null], 'category_id'],
+    [['category_id' => 1.5], 'category_id'],
+    [['category_id' => true], 'category_id'],
+    [['category_id' => 'string'], 'category_id'],
     [['category_id' => [null]], 'category_id.0'],
     [['category_id' => [1.5]], 'category_id.0'],
     [['category_id' => [true]], 'category_id.0'],
@@ -77,14 +82,13 @@ it('requires a valid data when updating', function (array $badData, array|string
     [['title' => 2], 'title'],
     [['title' => 1.5], 'title'],
     [['title' => true], 'title'],
+    [['title' => str_repeat('a', 4)], 'title'],
     [['title' => str_repeat('a', 256)], 'title'],
-    [['title' => str_repeat('a', 9)], 'title'],
     [['description' => null], 'description'],
     [['description' => 2], 'description'],
     [['description' => 1.5], 'description'],
     [['description' => true], 'description'],
     [['description' => str_repeat('a', 2001)], 'description'],
-    [['description' => str_repeat('a', 49)], 'description'],
     [['is_visible' => null], 'is_visible'],
     [['is_visible' => 5], 'is_visible'],
     [['is_visible' => 1.5], 'is_visible'],

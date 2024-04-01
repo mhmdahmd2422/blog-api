@@ -16,7 +16,7 @@ it('can show a category', function () {
         ->assertStatus(200)
         ->assertExactJson([
             'category' => responseData(CategoryResource::make($categories->first()->load('image'))),
-            'posts' => responsePaginatedData(
+            'posts' => responseData(
                 PostSimpleResource::collection($categories->first()->posts
                 ->paginate(pagination_length('post')))
             )

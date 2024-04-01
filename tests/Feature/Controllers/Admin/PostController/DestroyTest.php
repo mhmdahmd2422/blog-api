@@ -6,13 +6,9 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
-it('can delete a post with all child models', function () {
-   $post = Post::factory()->invisible()->hasImages(3)->hasComments(3)->create();
-
-   expect($post->images)
-       ->toHaveCount(3)
-       ->and($post->comments)
-       ->toHaveCount(3);
+it('can delete a post with all relations', function () {
+   $post = Post::factory()->invisible()->hasImages(3)
+       ->hasCategories(1)->hasComments(3)->create();
 
    delete(route('admin.posts.destroy', $post))
        ->assertStatus(200)
@@ -36,6 +32,13 @@ it('can delete a post with all child models', function () {
         ]);
 
         Storage::assertMissing($image->path);
+    }
+
+    foreach ($post->categories as $category) {
+        $this->assertDatabaseMissing('category_post', [
+            'category_id' => $category->id,
+            'post_id' => $post->id,
+        ]);
     }
 
     foreach ($post->comments as $comment) {
