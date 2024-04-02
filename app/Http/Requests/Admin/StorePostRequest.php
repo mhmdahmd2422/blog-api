@@ -16,7 +16,6 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'category_id' => ['required', 'array'],
             'category_id.*' => ['required_with:category_id', 'integer', 'distinct', 'exists:categories,id'],
             'title' => ['required', 'string', 'min:5', 'max:255'],
@@ -30,7 +29,7 @@ class StorePostRequest extends FormRequest
 
     public function storePost(): Post
     {
-        $post = Post::create($this->safe()->except('images'));
+        $post = Post::create($this->safe()->merge(['user_id' => auth()::id()])->except('images'));
 
         $post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
 

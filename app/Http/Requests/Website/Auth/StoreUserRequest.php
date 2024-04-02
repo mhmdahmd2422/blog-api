@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Website\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -18,13 +18,15 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:5', 'max:50'],
-            'email' => ['required', 'email', Rule::unique('users', 'email')],
-            'password' => ['confirmed', Password::defaults()]
+            'email' => ['required', 'string', 'email', Rule::unique('users', 'email')],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()]
         ];
     }
 
-    public function storeUser(): User
+    public function storeUser(): string
     {
-        return User::create($this->validated());
+        $user = User::create($this->validated());
+
+        return $user->createToken('User')->accessToken;
     }
 }
