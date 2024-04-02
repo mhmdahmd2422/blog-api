@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Admin\SpecificationFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreSpecificationRequest;
 use App\Http\Requests\Admin\UpdateSpecificationRequest;
@@ -11,13 +12,13 @@ use Illuminate\Http\Response;
 
 class SpecificationController extends Controller
 {
-    public function index(): Response
+    public function index(SpecificationFilter $filters): Response
     {
         $paginationLength = pagination_length('specification');
 
         return response([
             'specifications' => SpecificationResource::collection(Specification::with('image')
-                ->paginate($paginationLength))
+                ->filter($filters)->paginate($paginationLength))
         ]);
     }
 

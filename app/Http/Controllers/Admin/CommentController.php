@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Admin\CommentFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateCommentRequest;
 use App\Http\Resources\Admin\CommentResource;
@@ -11,13 +12,13 @@ use Illuminate\Http\Response;
 
 class CommentController extends Controller
 {
-    public function index(Post $post): Response
+    public function index(Post $post, CommentFilter $filters): Response
     {
         $paginationLength = pagination_length('comment');
 
         return response([
-            'comments' => CommentResource::collection($post->comments->load('user'))
-                ->paginate($paginationLength),
+            'comments' => CommentResource::collection($post->comments()->with('user')
+                ->filter($filters)->paginate($paginationLength))
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Admin\PostFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StorePostRequest;
 use App\Http\Requests\Admin\UpdatePostRequest;
@@ -12,12 +13,13 @@ use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
-    public function index(): Response
+    public function index(PostFilter $filters): Response
     {
         $paginationLength = pagination_length('post');
 
         return response([
-            'posts' => PostSimpleResource::collection(Post::paginate($paginationLength))
+            'posts' => PostSimpleResource::collection(Post::filter($filters)
+                ->paginate($paginationLength))
 
         ]);
     }

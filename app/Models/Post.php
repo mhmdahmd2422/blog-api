@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use App\Traits\Sluggable;
 use App\Traits\HasMorphedImages;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,10 +12,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Arr;
 
 class Post extends Model
 {
-    use HasFactory, Sluggable, HasMorphedImages;
+    use HasFactory, Sluggable, HasMorphedImages, Filterable;
 
     protected $fillable = [
         'user_id',
@@ -32,9 +34,11 @@ class Post extends Model
         $query->where('is_visible', $is_visible);
     }
 
-    public function scopeSearch($query, string $keyword, bool $is_visible = null): void
+    public function scopeSearch($query, $attributes, string $keyword, bool $is_visible = null): void
     {
-        $query->where('title', 'like', "%{$keyword}%");
+        foreach(Arr::wrap($attributes) as $attribute) {
+            $query->orWhere($attribute, 'like', "%{$keyword}%");
+        }
 
         if ($is_visible) {
             $query->visible();
