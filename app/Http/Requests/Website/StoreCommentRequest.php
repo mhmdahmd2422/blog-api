@@ -15,13 +15,12 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'body' => ['required', 'string', 'max:1500']
         ];
     }
 
     public function storeComment(): Comment
     {
-        return $this->post->comments()->create($this->validated());
+        return $this->post->comments()->create($this->merge(['user_id' => auth()::id()])->validated());
     }
 }

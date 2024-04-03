@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Filters\Admin\UserFilter;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
@@ -18,16 +17,6 @@ class UserController extends Controller
 
         return response([
            'users' => UserResource::collection(User::filter($filters)->paginate($paginationLength))
-        ]);
-    }
-
-    public function store(StoreUserRequest $request): Response
-    {
-        $user = $request->storeUser();
-
-        return response([
-            'user' => UserResource::make($user),
-            'message' => __('users.store')
         ]);
     }
 
