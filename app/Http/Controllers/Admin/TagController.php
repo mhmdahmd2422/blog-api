@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Admin\TagFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTagRequest;
 use App\Http\Requests\Admin\UpdateTagRequest;
@@ -11,13 +12,13 @@ use Illuminate\Http\Response;
 
 class TagController extends Controller
 {
-    public function index(): Response
+    public function index(TagFilter $filters): Response
     {
         $paginationLength = pagination_length('tag');
 
         return response([
             'tags' => TagResource::collection(Tag::with('places')
-                ->paginate($paginationLength))
+                ->filter($filters)->paginate($paginationLength))
         ]);
     }
 

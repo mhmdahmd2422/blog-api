@@ -2,22 +2,26 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Arr;
 
 class Specification extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
     protected $fillable = [
         'name'
     ];
 
-    public function scopeSearch($query, string $keyword): void
+    public function scopeSearch($query, $attributes, string $keyword): void
     {
-        $query->where('name', 'like', "%{$keyword}%");
+        foreach(Arr::wrap($attributes) as $attribute) {
+            $query->orWhere($attribute, 'like', "%{$keyword}%");
+        }
     }
 
     public function image(): MorphOne

@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Arr;
 
 class Tag extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
     protected $fillable = [
         'name',
@@ -25,9 +27,11 @@ class Tag extends Model
         $query->where('is_visible', $is_visible);
     }
 
-    public function scopeSearch($query, string $keyword, bool $is_visible = null): void
+    public function scopeSearch($query, $attributes, string $keyword, bool $is_visible = null): void
     {
-        $query->where('name', 'like', "%{$keyword}%");
+        foreach(Arr::wrap($attributes) as $attribute) {
+            $query->orWhere($attribute, 'like', "%{$keyword}%");
+        }
 
         if ($is_visible) {
             $query->visible();
