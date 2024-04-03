@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Admin\CategoryFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
@@ -12,12 +13,12 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
-    public function index(): Response
+    public function index(CategoryFilter $filters): Response
     {
         $paginationLength = pagination_length('category');
 
         return response([
-            'categories' => CategoryResource::collection(Category::with('image')
+            'categories' => CategoryResource::collection(Category::with('image')->filter($filters)
                 ->paginate($paginationLength))
         ]);
     }

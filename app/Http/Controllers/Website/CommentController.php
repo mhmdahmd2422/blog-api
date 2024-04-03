@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Filters\Website\CommentFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Website\StoreCommentRequest;
 use App\Http\Requests\Website\UpdateCommentRequest;
@@ -12,13 +13,13 @@ use Illuminate\Http\Response;
 
 class CommentController extends Controller
 {
-    public function index(Post $post): Response
+    public function index(Post $post, CommentFilter $filters): Response
     {
         $paginationLength = pagination_length('comment');
 
         return response([
-            'comments' => CommentResource::collection($post->comments()->isBanned(false)
-                ->with('user')->paginate($paginationLength))
+            'comments' => CommentResource::collection($post->comments()->with('user')
+                ->isBanned(false)->filter($filters)->paginate($paginationLength))
         ]);
     }
 

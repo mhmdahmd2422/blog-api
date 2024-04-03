@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Admin\UserFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Admin\UserResource;
@@ -10,12 +11,12 @@ use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    public function index(): Response
+    public function index(UserFilter $filters): Response
     {
         $paginationLength = pagination_length('user');
 
         return response([
-           'users' => UserResource::collection(User::paginate($paginationLength))
+           'users' => UserResource::collection(User::filter($filters)->paginate($paginationLength))
         ]);
     }
 

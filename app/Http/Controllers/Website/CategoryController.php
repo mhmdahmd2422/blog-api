@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Filters\Website\CategoryFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Website\CategoryResource;
 use App\Http\Resources\Website\PostSimpleResource;
@@ -10,12 +11,12 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
-    public function index(): Response
+    public function index(CategoryFilter $filters): Response
     {
         $paginationLength = pagination_length('category');
 
         return response([
-            'categories' => CategoryResource::collection(Category::visible()
+            'categories' => CategoryResource::collection(Category::visible()->filter($filters)
                 ->paginate($paginationLength))
         ]);
     }

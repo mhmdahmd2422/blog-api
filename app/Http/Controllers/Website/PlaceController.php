@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Filters\Website\PlaceFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Website\PlaceResource;
 use App\Http\Resources\Website\PlaceSimpleResource;
@@ -10,12 +11,12 @@ use Illuminate\Http\Response;
 
 class PlaceController extends Controller
 {
-    public function index(): Response
+    public function index(PlaceFilter $filters): Response
     {
         $paginationLength = pagination_length('place');
 
         return response([
-            'places' => PlaceSimpleResource::collection(Place::with('images')
+            'places' => PlaceSimpleResource::collection(Place::with('images')->filter($filters)
                 ->visible()->paginate($paginationLength))
         ]);
     }
