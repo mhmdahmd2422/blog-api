@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Website\Auth;
 
 use App\Models\User;
+use App\Notifications\Website\UserRegisteredNotification;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -23,10 +24,15 @@ class StoreUserRequest extends FormRequest
         ];
     }
 
-    public function storeUser(): string
+    public function storeUser(): array
     {
         $user = User::create($this->validated());
 
-        return $user->createToken('User')->accessToken;
+        $user->notify(new UserRegisteredNotification);
+
+        return [
+            'user' => $user,
+            'token' => $user->createToken('User')->accessToken
+        ];
     }
 }

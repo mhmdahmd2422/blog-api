@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Website\Auth\ForgetPasswordController;
 use App\Http\Controllers\Website\Auth\LoginController;
 use App\Http\Controllers\Website\Auth\LogoutController;
 use App\Http\Controllers\Website\Auth\RegisterController;
+use App\Http\Controllers\Website\Auth\ResetPasswordController;
 use App\Http\Controllers\Website\CategoryController;
 use App\Http\Controllers\Website\CommentController;
 use App\Http\Controllers\Website\PlaceController;
@@ -20,6 +22,8 @@ Route::group([
     Route::apiResource('register', RegisterController::class)->only('store');
     Route::apiResource('logout', LogoutController::class)
         ->only('store')->middleware('auth:api');
+    Route::apiResource('password/forget', ForgetPasswordController::class)->only('store');
+    Route::apiResource('password/reset', ResetPasswordController::class)->only('store');
 });
 
 Route::name('website.')

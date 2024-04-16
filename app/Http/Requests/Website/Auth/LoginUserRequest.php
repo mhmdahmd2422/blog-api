@@ -22,12 +22,15 @@ class LoginUserRequest extends FormRequest
         ];
     }
 
-    public function loginUser(): string|bool
+    public function loginUser(): array|bool
     {
         if (Auth::attempt($this->validated())) {
             $user = User::find(Auth::id());
 
-            return $user->createToken('User')->accessToken;
+            return [
+                'user' => $user,
+                'token' => $user->createToken('User')->accessToken
+            ];
         }
 
         return false;
