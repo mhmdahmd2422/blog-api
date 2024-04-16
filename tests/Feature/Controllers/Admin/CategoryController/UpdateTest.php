@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can update a category', function () {
     $oldCategory = Category::factory()->invisible()->create();
     $updatedCategory = Category::factory()->visible()->make();

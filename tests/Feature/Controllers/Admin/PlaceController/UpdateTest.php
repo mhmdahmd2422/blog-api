@@ -5,6 +5,10 @@ use App\Models\Place;
 use App\Models\Specification;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can update a place', function () {
    $oldPlace = Place::factory()->visible()->hasTags(2)
        ->hasAttached(Specification::factory()->count(2), ['description' => 'value'])

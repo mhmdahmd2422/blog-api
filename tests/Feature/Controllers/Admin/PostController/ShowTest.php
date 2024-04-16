@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\PostResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can show a post', function () {
     $post = Post::factory()->invisible()->hasCategories(2)->create();
 

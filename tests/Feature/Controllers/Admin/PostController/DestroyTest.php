@@ -6,6 +6,10 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can delete a post with all relations', function () {
    $post = Post::factory()->invisible()->hasImages(3)
        ->hasCategories(1)->hasComments(3)->create();

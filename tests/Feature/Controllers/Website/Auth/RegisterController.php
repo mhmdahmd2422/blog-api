@@ -1,59 +1,52 @@
 <?php
 
-use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
-use function Pest\Laravel\{put};
+use App\Notifications\Website\UserRegisteredNotification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use Laravel\Passport\ClientRepository;
+use function Pest\Laravel\{post};
 
 beforeEach(function () {
-    loginAsUser();
-});
+    Notification::fake();
 
-it('can update a user', function () {
-    $user = User::factory()->create();
-    $updatedUser = User::factory()->make();
-
-    $response = put(route('admin.users.update', $user), [
-        'name' => $updatedUser->name,
-        'email' => $updatedUser->email,
-    ]);
-
-    $updatedUser->id = $user->fresh()->id;
-
-    $response
-        ->assertStatus(200)
-        ->assertExactJson([
-            'user' => responseData(UserResource::make($updatedUser)),
-            'message' => __('users.update')
-        ]);
-
-    $this->assertDatabaseHas(User::class, [
-        'name' => $updatedUser->name,
-        'email' => $updatedUser->email,
+    $clientRepository = new ClientRepository();
+    $this->client = $clientRepository->createPersonalAccessClient(
+        null, 'Test Personal Access Client', '/'
+    );
+    DB::table('oauth_personal_access_clients')->insert([
+        'client_id' => $this->client->id,
+        'created_at' => date('Y-m-d'),
+        'updated_at' => date('Y-m-d'),
     ]);
 });
 
-it('cannot update a user with a repeated email', function () {
-    $firstUser = User::factory()->create();
-    $secondUser = User::factory()->create();
+it('can register a user', function () {
 
-    put(route('admin.users.update', $firstUser), [
-        'name' => $secondUser->name,
-        'email' => $secondUser->email,
+    post(route('website.auth.register.store'), [
+        'name' => $name = fake()->name(),
+        'email' => $email = fake()->email(),
         'password' => 'Password@123',
-        'password_confirmation' => 'Password@123',
+        'password_confirmation' => 'Password@123'
     ])
-        ->assertStatus(302)
-        ->assertInvalid([
-            "email" => [
-                "The email has already been taken."
-            ]
-        ]);
+        ->assertStatus(200);
+
+    $created_user = User::first();
+
+    expect($created_user->name)
+        ->toEqual($name)
+        ->and($created_user->email)
+        ->toEqual($email);
+
+    Notification::assertSentTo(
+        [$created_user], UserRegisteredNotification::class
+    );
+
+    Notification::assertCount(1);
 });
 
-it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    $user = User::factory()->create();
-
-    put(route('admin.users.update', $user), [[
+it('requires a valid data when registering', function (array $badData, array|string $errors) {
+    post(route('website.auth.register.store'), [[
         'name' => fake()->name(),
         'email' => fake()->email(),
         'password' => 'Password@123',

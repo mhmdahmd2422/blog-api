@@ -4,6 +4,10 @@ use App\Http\Resources\Website\PostResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can show a post', function () {
     $posts = Post::factory()->count(20)->hasCategories(3)
         ->sequence(

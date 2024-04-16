@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\TagResource;
 use App\Models\Tag;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can update a tag', function () {
     $oldTag = Tag::factory()->visible()->create();
     $newTag = Tag::factory()->visible()->create();

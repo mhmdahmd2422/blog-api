@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{post};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can store a post', function () {
     $post = Post::factory()->invisible()->hasCategories(1)->create();
     $image = UploadedFile::fake()->image('testImage.png');
@@ -64,7 +68,6 @@ it('requires a valid data when creating', function (array $badData, array|string
     $post = Post::factory()->invisible()->hasCategories(1)->create();
 
     post(route('admin.posts.store'), [[
-        'user_id' => $post->user_id,
         'category_id' => $post->categories,
         'title' => $post->title,
         'description' => $post->description,
@@ -73,11 +76,6 @@ it('requires a valid data when creating', function (array $badData, array|string
     ], ...$badData])
         ->assertInvalid($errors);
 })->with([
-    [['user_id' => null], 'user_id'],
-    [['user_id' => 1.5], 'user_id'],
-    [['user_id' => true], 'user_id'],
-    [['user_id' => 'string'], 'user_id'],
-    [['user_id' => 2], 'user_id'], //exists:users
     [['category_id' => null], 'category_id'],
     [['category_id' => 1.5], 'category_id'],
     [['category_id' => true], 'category_id'],

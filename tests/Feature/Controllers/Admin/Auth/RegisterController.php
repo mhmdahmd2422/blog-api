@@ -1,53 +1,40 @@
 <?php
 
-use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
-use function Pest\Laravel\post;
+use Illuminate\Support\Facades\DB;
+use Laravel\Passport\ClientRepository;
+use function Pest\Laravel\{post};
 
-it('can create a user', function () {
-    $user = User::factory()->make();
-
-    $response = post(route('admin.users.store'), [
-        'name' => $user->name,
-        'email' => $user->email,
-        'password' => 'Password@123',
-        'password_confirmation' => 'Password@123',
-    ]);
-
-    $user->id = User::latest()->value('id');
-
-    $response
-        ->assertStatus(200)
-        ->assertExactJson([
-            'user' => responseData(UserResource::make($user)),
-            'message' => __('users.store')
-        ]);
-
-    $this->assertDatabaseHas(User::class, [
-        'name' => $user->name,
-        'email' => $user->email,
+beforeEach(function () {
+    $clientRepository = new ClientRepository();
+    $this->client = $clientRepository->createPersonalAccessClient(
+        null, 'Test Personal Access Client', '/'
+    );
+    DB::table('oauth_personal_access_clients')->insert([
+        'client_id' => $this->client->id,
+        'created_at' => date('Y-m-d'),
+        'updated_at' => date('Y-m-d'),
     ]);
 });
 
-it('cannot create a user with a repeated email', function () {
-    $user = User::factory()->create();
+it('can register a user', function () {
 
-    post(route('admin.users.store'), [
-        'name' => $user->name,
-        'email' => $user->email,
+    post(route('admin.auth.register.store'), [
+        'name' => $name = fake()->name(),
+        'email' => $email = fake()->email(),
         'password' => 'Password@123',
-        'password_confirmation' => 'Password@123',
+        'password_confirmation' => 'Password@123'
     ])
-        ->assertStatus(302)
-        ->assertInvalid([
-            "email" => [
-                "The email has already been taken."
-            ]
-        ]);
+        ->assertStatus(200);
+
+    expect(User::first()->name)
+        ->toEqual($name)
+        ->and(User::first()->email)
+        ->toEqual($email);
 });
 
-it('requires a valid data when creating', function (array $badData, array|string $errors) {
-    post(route('admin.users.store'), [[
+it('requires a valid data when registering', function (array $badData, array|string $errors) {
+    post(route('admin.auth.register.store'), [[
         'name' => fake()->name(),
         'email' => fake()->email(),
         'password' => 'Password@123',

@@ -5,6 +5,10 @@ use App\Models\Comment;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('returns not found if comment do not exist for this post', function () {
     $firstPost = Post::factory()->hasComments(5)->create();
     $SecondPost = Post::factory()->hasComments(5)->create();

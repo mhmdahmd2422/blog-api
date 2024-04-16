@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can update a specification', function () {
     $oldSpecification = Specification::factory()->create();
     $newSpecification = Specification::factory()->create();

@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can destroy a place', function () {
     $place = Place::factory()->invisible()->hasImages(3)->hasTags(2)
         ->hasAttached(Specification::factory()->count(2), ['description' => 'value'])

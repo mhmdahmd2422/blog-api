@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can destroy a specification', function () {
     $specification = Specification::factory()->hasAttached(
         Place::factory()->count(3), ['description' => 'value']

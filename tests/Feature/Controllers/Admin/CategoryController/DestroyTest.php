@@ -3,9 +3,14 @@
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
+
+beforeEach(function () {
+    loginAsUser();
+});
 
 it('can delete a category', function () {
     $testImage = UploadedFile::fake()->image('testImage.png');

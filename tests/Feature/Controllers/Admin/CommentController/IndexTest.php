@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\CommentResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can get all comments for a post', function (){
    $post = Post::factory()->hasComments(10)->create();
 

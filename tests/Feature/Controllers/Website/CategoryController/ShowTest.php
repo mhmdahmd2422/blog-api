@@ -5,6 +5,10 @@ use App\Http\Resources\Website\PostSimpleResource;
 use App\Models\Category;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can show a category', function () {
     $categories = Category::factory()->count(20)
         ->sequence(

@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{post};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can store a specification', function () {
    $specification = Specification::factory()->make();
    $image = UploadedFile::fake()->image('testImage.png');

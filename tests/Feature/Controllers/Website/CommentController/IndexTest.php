@@ -5,6 +5,10 @@ use App\Models\Comment;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can get all comments for a post', function (){
    $post = Post::factory()->hasComments(2)
        ->has(Comment::factory()->count(2)->banned())->create();

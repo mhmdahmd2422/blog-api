@@ -6,6 +6,7 @@ use function Pest\Laravel\get;
 
 it('get all users', function () {
     $users = User::factory()->count(10)->create();
+    loginAsUser($users->first());
 
     expect(User::all())
         ->toHaveCount(10);

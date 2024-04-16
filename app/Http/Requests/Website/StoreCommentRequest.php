@@ -4,6 +4,7 @@ namespace App\Http\Requests\Website;
 
 use App\Models\Comment;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreCommentRequest extends FormRequest
 {
@@ -21,6 +22,10 @@ class StoreCommentRequest extends FormRequest
 
     public function storeComment(): Comment
     {
-        return $this->post->comments()->create($this->merge(['user_id' => auth()::id()])->validated());
+        return $this->post->comments()->create(
+            [
+                'user_id' => Auth::id(),
+                'body' => $this->body
+            ]);
     }
 }

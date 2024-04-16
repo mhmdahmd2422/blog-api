@@ -5,6 +5,10 @@ use App\Models\Place;
 use App\Models\Specification;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can show a visible specification', function () {
    $specification = Specification::factory()->hasImage()->hasAttached(
        Place::factory()->count(3), ['description' => 'value']
