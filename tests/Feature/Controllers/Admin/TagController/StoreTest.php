@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\TagResource;
 use App\Models\Tag;
 use function Pest\Laravel\{post};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can store a tag', function () {
    $tag = Tag::factory()->invisible()->create();
 

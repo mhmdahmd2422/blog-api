@@ -11,9 +11,8 @@
 |
 */
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
 
 uses(
     Tests\TestCase::class,
@@ -45,6 +44,14 @@ expect()->extend('toBeOne', function () {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+
+function loginAsUser(?User $user = null): User
+{
+    $user = $user ?? User::factory()->create();
+    \Laravel\Passport\Passport::actingAs($user);
+
+    return $user;
+}
 
 function responseData($resource)
 {

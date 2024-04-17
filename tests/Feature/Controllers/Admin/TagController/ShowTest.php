@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\TagResource;
 use App\Models\Tag;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can show a tag', function () {
    $tag = Tag::factory()->invisible()->hasPlaces(2)->create();
 

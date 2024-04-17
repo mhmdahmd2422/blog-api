@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\CommentResource;
 use App\Models\Comment;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('it can ban a comment', function () {
    $comment = Comment::factory()->hasPost()->create();
 

@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('returns not found if image do not exist for this post', function () {
     $firstPost = Post::factory()->invisible()->has(
         Image::factory()->is_main()

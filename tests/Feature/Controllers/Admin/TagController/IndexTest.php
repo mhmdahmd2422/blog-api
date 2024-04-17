@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\TagResource;
 use App\Models\Tag;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can get all tags', function () {
    $tags = Tag::factory()->invisible()->count(5)->hasPlaces(2)->create();
 

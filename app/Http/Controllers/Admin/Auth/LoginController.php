@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Auth\LoginUserRequest;
+use App\Http\Resources\Admin\UserResource;
 use Illuminate\Http\Response;
 
 class LoginController extends Controller
 {
     public function store(LoginUserRequest $request): Response
     {
-        $token = $request->loginUser();
+        $credentials = $request->loginUser();
 
-        if ($token) {
+        if ($credentials) {
             return response([
-                'access_token' => $token,
+                'user' => UserResource::make($credentials['user']),
+                'access_token' => $credentials['token'],
                 'message' => __('auth.login')
             ]);
         }

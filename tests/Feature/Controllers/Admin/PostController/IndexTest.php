@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\PostSimpleResource;
 use App\Models\Post;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can get all posts', function () {
     $posts = Post::factory()->count(20)->hasImages(3)
         ->sequence(

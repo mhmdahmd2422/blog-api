@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{post};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can store a category with image', function () {
     $category = Category::factory()->invisible()->make();
     $image = UploadedFile::fake()->image('testImage.png');

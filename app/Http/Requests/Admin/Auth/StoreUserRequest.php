@@ -23,10 +23,13 @@ class StoreUserRequest extends FormRequest
         ];
     }
 
-    public function storeUser(): string
+    public function storeUser(): array
     {
         $user = User::create($this->validated());
 
-        return $user->createToken('User')->accessToken;
+        return [
+            'user' => $user,
+            'token' => $user->createToken('User')->accessToken
+        ];
     }
 }

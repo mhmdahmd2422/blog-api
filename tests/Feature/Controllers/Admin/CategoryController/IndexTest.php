@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\CategoryResource;
 use App\Models\Category;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can get all categories', function () {
    $categories = Category::factory()->count(10)
        ->sequence(

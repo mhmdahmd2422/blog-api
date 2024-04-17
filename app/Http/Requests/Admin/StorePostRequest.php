@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Models\Post;
 use App\Rules\OneMainImage;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StorePostRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class StorePostRequest extends FormRequest
 
     public function storePost(): Post
     {
-        $post = Post::create($this->safe()->merge(['user_id' => auth()::id()])->except('images'));
+        $post = Post::create($this->safe()->merge(['user_id' => Auth::id()])->except('images'));
 
         $post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
 

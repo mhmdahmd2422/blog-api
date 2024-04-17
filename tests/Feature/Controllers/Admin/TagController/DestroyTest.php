@@ -4,6 +4,10 @@ use App\Models\Place;
 use App\Models\Tag;
 use function Pest\Laravel\{delete};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can destroy a tag', function () {
    $tag = Tag::factory()->invisible()->hasPlaces(3)->create();
 

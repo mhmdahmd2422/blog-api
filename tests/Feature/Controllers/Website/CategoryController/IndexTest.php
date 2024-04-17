@@ -4,6 +4,10 @@ use App\Http\Resources\Website\CategoryResource;
 use App\Models\Category;
 use function Pest\Laravel\{get};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can get all visible categories', function () {
     Category::factory()->count(10)
         ->sequence(

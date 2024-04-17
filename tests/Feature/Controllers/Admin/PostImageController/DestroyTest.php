@@ -6,6 +6,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{delete};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('returns not found if image do not exist for this post', function () {
     $firstPost = Post::factory()->invisible()->hasImages(1)->create();
     $secondPost = Post::factory()->invisible()->create();

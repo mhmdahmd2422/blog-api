@@ -5,6 +5,10 @@ use App\Models\Post;
 use App\Models\User;
 use function Pest\Laravel\{delete};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can not delete a user who has posts', function () {
     $user = User::factory()->create();
     Post::factory()->for($user)->create();

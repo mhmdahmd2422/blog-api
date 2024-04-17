@@ -7,6 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\post;
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can add images to existing post', function () {
    $post = Post::factory()->invisible()->create();
    $image = UploadedFile::fake()->image('testImage.png');

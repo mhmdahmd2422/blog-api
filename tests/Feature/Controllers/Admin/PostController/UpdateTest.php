@@ -5,6 +5,10 @@ use App\Models\Category;
 use App\Models\Post;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can update a post', function () {
     $oldPost = Post::factory()->invisible()->has(
         Category::factory()->count(2)->sequence(

@@ -4,6 +4,10 @@ use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
 use function Pest\Laravel\{put};
 
+beforeEach(function () {
+    loginAsUser();
+});
+
 it('can update a user', function () {
     $user = User::factory()->create();
     $updatedUser = User::factory()->make();
