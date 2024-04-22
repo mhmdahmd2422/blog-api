@@ -18,7 +18,7 @@ it('can get all visible categories', function () {
     get(route('website.categories.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'categories' => responseData(
+            'categories' => responsePaginatedData(
                 CategoryResource::collection(Category::visible()
                     ->paginate(pagination_length('category')))
             )

@@ -43,7 +43,7 @@ it('can delete a post image', function () {
    Storage::assertMissing($imagePath);
 });
 
-it('can not delete a post main image if there are other images attached', function () {
+it('can not delete a post main image and assign is_main to another image if there are other images attached', function () {
     $post = Post::factory()->invisible()->create();
     Image::factory()->count(2)->for($post, 'imageable')->sequence(
         ['is_main' => true],
@@ -51,5 +51,11 @@ it('can not delete a post main image if there are other images attached', functi
     )->create();
 
     delete(route('admin.posts.images.destroy', [$post, $post->images()->first()]))
-        ->assertStatus(404);
+        ->assertStatus(200)
+        ->assertExactJson([
+            'message' => __('posts.image.destroy')
+        ]);
+
+    expect($post->fresh()->images()->first()->is_main)
+        ->toBeTrue();
 });

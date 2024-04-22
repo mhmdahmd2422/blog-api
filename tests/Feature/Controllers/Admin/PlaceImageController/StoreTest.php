@@ -25,7 +25,7 @@ it('can add images to an existing place', function () {
        ]
    ])
        ->assertStatus(200)
-       ->assertJson([
+       ->assertExactJson([
            'place' => responseData(PlaceResource::make($place->load('images'))),
            'message' => __('places.image.store')
        ]);

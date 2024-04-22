@@ -18,7 +18,7 @@ it('can get all places', function () {
    get(route('admin.places.index'))
        ->assertStatus(200)
        ->assertExactJson([
-           'places' => responseData(
+           'places' => responsePaginatedData(
                PlaceSimpleResource::collection($places->load('images')
                    ->paginate(pagination_length('place')))
            )

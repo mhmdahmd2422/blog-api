@@ -65,7 +65,7 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['name' => 1], 'name'],
     [['name' => 1.5], 'name'],
     [['name' => true], 'name'],
-    [['name' => str_repeat('a', 4)], 'name'],
+    [['name' => str_repeat('a', 1)], 'name'],
     [['name' => str_repeat('a', 51)], 'name'],
     [['email' => null], 'email'],
     [['email' => 1], 'email'],

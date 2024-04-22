@@ -18,7 +18,7 @@ class UpdatePostRequest extends FormRequest
             'category_id' => ['sometimes', 'array'],
             'category_id.*' => ['required_with:category_id', 'integer', 'distinct', 'exists:categories,id'],
             'title' => ['sometimes', 'string', 'min:5', 'max:255'],
-            'description' => ['sometimes', 'string', 'max:2000'],
+            'description' => ['sometimes', 'string', 'min:2', 'max:2000'],
             'is_visible' => ['sometimes', 'boolean']
         ];
     }

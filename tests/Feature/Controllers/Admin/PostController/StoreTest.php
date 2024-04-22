@@ -96,6 +96,7 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['description' => 2], 'description'],
     [['description' => 1.5], 'description'],
     [['description' => true], 'description'],
+    [['description' => str_repeat('a', 1)], 'description'],
     [['description' => str_repeat('a', 2001)], 'description'],
     [['is_visible' => null], 'is_visible'],
     [['is_visible' => 5], 'is_visible'],

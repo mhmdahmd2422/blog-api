@@ -19,11 +19,7 @@ it('can show a category', function () {
     get(route('website.categories.show', $categories->first()))
         ->assertStatus(200)
         ->assertExactJson([
-            'category' => responseData(CategoryResource::make($categories->first()->load('image'))),
-            'posts' => responseData(
-                PostSimpleResource::collection($categories->first()->posts
-                ->paginate(pagination_length('post')))
-            )
+            'category' => responseData(CategoryResource::make($categories->first()->load('image')))
         ]);
 });
 

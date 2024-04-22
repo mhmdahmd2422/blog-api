@@ -18,7 +18,7 @@ class CommentController extends Controller
 
         return response([
             'comments' => CommentResource::collection($post->comments()->with('user')
-                ->filter($filters)->get())->paginate($paginationLength)
+                ->filter($filters)->get())->paginate($paginationLength)->withQueryString()
         ]);
     }
 

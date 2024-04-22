@@ -17,7 +17,7 @@ class PlaceController extends Controller
 
         return response([
             'places' => PlaceSimpleResource::collection(Place::with('images')->filter($filters)
-                ->visible()->paginate($paginationLength))
+                ->visible()->get())->paginate($paginationLength)->withQueryString()
         ]);
     }
 

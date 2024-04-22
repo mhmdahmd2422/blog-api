@@ -16,7 +16,7 @@ it('can get all comments for a post', function (){
    get(route('website.posts.comments.index', $post))
        ->assertStatus(200)
        ->assertExactJson([
-           'comments' => responseData(
+           'comments' => responsePaginatedData(
                CommentResource::collection($post->comments()->isBanned(false)->with('user')
                    ->paginate(pagination_length('comment')))
            )

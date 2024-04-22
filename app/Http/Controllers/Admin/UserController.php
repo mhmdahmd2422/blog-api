@@ -16,7 +16,8 @@ class UserController extends Controller
         $paginationLength = pagination_length('user');
 
         return response([
-           'users' => UserResource::collection(User::filter($filters)->paginate($paginationLength))
+           'users' => UserResource::collection(User::filter($filters)->get())
+               ->paginate($paginationLength)->withQueryString()
         ]);
     }
 

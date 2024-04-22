@@ -14,7 +14,7 @@ it('can get all visible specifications', function () {
    get(route('website.specifications.index'))
        ->assertStatus(200)
        ->assertExactJson([
-           'specifications' => responseData(
+           'specifications' => responsePaginatedData(
                SpecificationResource::collection($specifications->load('image')
                    ->paginate(pagination_length('specification')))
            )

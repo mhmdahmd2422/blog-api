@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\Image;
 use App\Models\Post;
 use App\Rules\OneMainImage;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePostImageRequest extends FormRequest
@@ -18,24 +16,19 @@ class UpdatePostImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048', new OneMainImage($this->post)],
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048', new OneMainImage($this->post, $this->is_main, $this->imageId)],
             'is_main' => ['sometimes', 'boolean']
         ];
     }
 
     public function updateImage(): Post|bool
     {
-        $image = Image::whereHasMorph('imageable',
-            Post::class,
-            function (Builder $query) {
-                $query->whereId($this->post->id);
-            }
-        )->whereId($this->imageId)->first();
+        $image = $this->post->whereHasImage($this->imageId);
 
         if ($image) {
             if ($this->is_main) {
                 $this->post->main_image->update([
-                    'is_main' => false,
+                    'is_main' => 0,
                 ]);
             }
 

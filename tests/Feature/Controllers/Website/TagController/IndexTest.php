@@ -14,8 +14,8 @@ it('can get all visible tags', function () {
    get(route('website.tags.index'))
        ->assertStatus(200)
        ->assertExactJson([
-           'tags' => responseData(
-               TagResource::collection(Tag::visible()->with('places')
+           'tags' => responsePaginatedData(
+               TagResource::collection(Tag::visible()
                    ->paginate(pagination_length('tag')))
            )
        ]);

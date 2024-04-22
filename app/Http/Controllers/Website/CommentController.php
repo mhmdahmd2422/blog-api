@@ -18,8 +18,8 @@ class CommentController extends Controller
         $paginationLength = pagination_length('comment');
 
         return response([
-            'comments' => CommentResource::collection($post->comments()->with('user')
-                ->isBanned(false)->filter($filters)->paginate($paginationLength))
+            'comments' => CommentResource::collection($post->comments()->with('user')->isBanned(false)
+                ->filter($filters)->get())->paginate($paginationLength)->withQueryString()
         ]);
     }
 

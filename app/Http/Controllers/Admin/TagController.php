@@ -17,8 +17,8 @@ class TagController extends Controller
         $paginationLength = pagination_length('tag');
 
         return response([
-            'tags' => TagResource::collection(Tag::with('places')
-                ->filter($filters)->paginate($paginationLength))
+            'tags' => TagResource::collection(Tag::filter($filters)->get())
+                ->paginate($paginationLength)->withQueryString()
         ]);
     }
 

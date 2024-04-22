@@ -13,7 +13,7 @@ class PlaceResource extends JsonResource
         return [
             'id' => $this->id,
             'slug' => $this->slug,
-            'name' => $this->title,
+            'name' => $this->name,
             'description' => $this->description,
             'is_visible' => $this->is_visible,
             'images' => ImageResource::collection($this->whenLoaded('images')),

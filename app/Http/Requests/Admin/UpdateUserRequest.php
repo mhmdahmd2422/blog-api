@@ -17,8 +17,8 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'min:5', 'max:50'],
-            'email' => ['sometimes', 'email', Rule::unique('users')->ignore($this->user->email, 'email')],
+            'name' => ['sometimes', 'string', 'min:2', 'min:5', 'max:50'],
+            'email' => ['sometimes', 'string', 'email', Rule::unique('users')->ignore($this->user->email, 'email')],
             'password' => ['sometimes', 'confirmed', Password::defaults()]
         ];
     }

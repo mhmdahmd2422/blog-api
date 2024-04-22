@@ -18,7 +18,7 @@ class SpecificationController extends Controller
 
         return response([
             'specifications' => SpecificationResource::collection(Specification::with('image')
-                ->filter($filters)->paginate($paginationLength))
+                ->filter($filters)->get())->paginate($paginationLength)->withQueryString()
         ]);
     }
 

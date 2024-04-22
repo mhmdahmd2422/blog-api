@@ -16,7 +16,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:25'],
+            'name' => ['sometimes', 'string', 'min:2', 'max:25'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'is_visible' => ['sometimes', 'boolean']
         ];

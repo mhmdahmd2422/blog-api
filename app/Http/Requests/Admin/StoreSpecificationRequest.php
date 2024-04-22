@@ -16,7 +16,7 @@ class StoreSpecificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100', 'unique:specifications,name'],
+            'name' => ['required', 'string', 'min:2', 'max:100', 'unique:specifications,name'],
             'image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }

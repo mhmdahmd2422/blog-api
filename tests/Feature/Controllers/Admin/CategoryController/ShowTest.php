@@ -9,16 +9,12 @@ beforeEach(function () {
     loginAsUser();
 });
 
-it('can show a category with its assigned posts', function () {
+it('can show a category', function () {
    $category = Category::factory()->invisible()->hasPosts(10)->create();
 
     get(route('admin.categories.show', $category))
         ->assertStatus(200)
         ->assertExactJson([
-            'category' => responseData(CategoryResource::make($category->load('image'))),
-            'posts' => responsePaginatedData(
-                PostSimpleResource::collection($category->posts
-                    ->paginate(pagination_length('post')))
-            )
+            'category' => responseData(CategoryResource::make($category->load('image')))
         ]);
 });

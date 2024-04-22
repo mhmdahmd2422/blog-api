@@ -14,8 +14,8 @@ it('can get all tags', function () {
    get(route('admin.tags.index'))
        ->assertStatus(200)
        ->assertExactJson([
-           'tags' => responseData(
-               TagResource::collection($tags->load('places')
+           'tags' => responsePaginatedData(
+               TagResource::collection($tags
                    ->paginate(pagination_length('tag')))
            )
        ]);

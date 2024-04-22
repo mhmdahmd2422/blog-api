@@ -16,8 +16,8 @@ class StorePlaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
-            'description' => ['required', 'string', 'max:1000'],
+            'name' => ['required', 'string', 'min:2', 'max:100'],
+            'description' => ['required', 'string', 'min:2', 'max:1000'],
             'is_visible' => ['required', 'boolean'],
             'images' => ['sometimes', 'array', 'max:3', new OneMainImage],
             'images.*.image' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
@@ -26,7 +26,7 @@ class StorePlaceRequest extends FormRequest
             'tag_id.*' => ['required_with:tag_id', 'integer', 'distinct', 'exists:tags,id'],
             'specifications' => ['required', 'array', 'min:1'],
             'specifications.*.specification_id' => ['required_with:specifications', 'integer', 'distinct', 'exists:specifications,id'],
-            'specifications.*.description' => ['required_with:specifications', 'string', 'max:100']
+            'specifications.*.description' => ['required_with:specifications', 'string', 'min:2', 'max:100']
         ];
     }
 

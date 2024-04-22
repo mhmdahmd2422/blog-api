@@ -48,7 +48,7 @@ it('requires a valid data when updating', function (array $badData, array|string
     [['name' => 2], 'name'],
     [['name' => 1.5], 'name'],
     [['name' => true], 'name'],
-    [['name' => str_repeat('a', 256)], 'name'],
+    [['name' => str_repeat('a', 101)], 'name'],
     [['name' => 'Tag name'], 'name'], //regex
     [['is_visible' => null], 'is_visible'],
     [['is_visible' => 5], 'is_visible'],

@@ -18,7 +18,7 @@ it('can get all visible places', function () {
    get(route('website.places.index'))
        ->assertStatus(200)
        ->assertExactJson([
-           'places' => responseData(
+           'places' => responsePaginatedData(
                PlaceSimpleResource::collection(Place::visible()->with('images')
                    ->paginate(pagination_length('place')))
            )

@@ -28,4 +28,11 @@ class PostFilter extends QueryFilter
             $q->where('name', 'like', "%{$author}%");
         });
     }
+
+    public function category($category = ''): Builder
+    {
+        return $this->builder->whereHas('categories', function($q) use ($category) {
+            $q->where('name', 'like', "%{$category}%");
+        });
+    }
 }

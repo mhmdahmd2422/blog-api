@@ -16,7 +16,7 @@ class UpdateTagRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_]+$/', Rule::unique('tags')->ignore($this->tag->name, 'name')],
+            'name' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z0-9_]+$/', Rule::unique('tags')->ignore($this->tag->name, 'name')],
             'is_visible' => ['sometimes', 'boolean']
         ];
     }

@@ -92,14 +92,16 @@ class Post extends Model
 
     public function destroyImage(string $imageId): bool
     {
-        $image = $this->whereHasImage($imageId);
+        $image = $this->images()->where('id', $imageId)->first();
 
         if ($image) {
-            if ($image->is_main && $this->images()->count() == 1) {
-                $image->remove();
-
-                return true;
+            if ($image->is_main && $this->images()->count() > 1) {
+                $this->images()->where('id', '!=', $image->id)->first()
+                    ->update(['is_main' => 1]);
             }
+
+            $image->remove();
+            return true;
         }
 
         return false;

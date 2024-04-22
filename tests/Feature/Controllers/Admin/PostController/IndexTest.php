@@ -18,7 +18,7 @@ it('can get all posts', function () {
     get(route('admin.posts.index'))
         ->assertStatus(200)
         ->assertExactJson([
-            'posts' => responseData(
+            'posts' => responsePaginatedData(
                 PostSimpleResource::collection($posts->load('images')
                     ->paginate(pagination_length('post')))
             )

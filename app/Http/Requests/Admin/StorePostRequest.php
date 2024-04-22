@@ -20,7 +20,7 @@ class StorePostRequest extends FormRequest
             'category_id' => ['required', 'array'],
             'category_id.*' => ['required_with:category_id', 'integer', 'distinct', 'exists:categories,id'],
             'title' => ['required', 'string', 'min:5', 'max:255'],
-            'description' => ['required', 'string', 'max:2000'],
+            'description' => ['required', 'string', 'min:2', 'max:2000'],
             'images' => ['sometimes', 'array', 'max:3', new OneMainImage],
             'images.*.image' => ['required_with:images', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'images.*.is_main' => ['sometimes', 'boolean'],
@@ -30,7 +30,7 @@ class StorePostRequest extends FormRequest
 
     public function storePost(): Post
     {
-        $post = Post::create($this->safe()->merge(['user_id' => Auth::id()])->except('images'));
+        $post = Post::create($this->safe()->merge(['user_id' => auth('api')->id()])->except('images'));
 
         $post->categories()->sync(data_get($this->safe()->only(['category_id']), 'category_id'));
 

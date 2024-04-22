@@ -19,8 +19,7 @@ class PostController extends Controller
 
         return response([
             'posts' => PostSimpleResource::collection(Post::filter($filters)
-                ->paginate($paginationLength))
-
+                ->get())->paginate($paginationLength)->withQueryString()
         ]);
     }
 

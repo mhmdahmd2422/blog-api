@@ -64,6 +64,7 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['name' => 2], 'name'],
     [['name' => 1.5], 'name'],
     [['name' => true], 'name'],
+    [['name' => str_repeat('a', 1)], 'name'], // min
     [['name' => str_repeat('a', 101)], 'name'], // max
     [['name' => 'test Specification'], 'name'], // unique
     [['image' => null], 'image'],

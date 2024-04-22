@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
             CommentSeeder::class,
             TagSeeder::class,
             SpecificationSeeder::class,
-            PlaceSeeder::class
+            PlaceSeeder::class,
+            PassportSeeder::class
         ]);
     }
 }

@@ -108,11 +108,13 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['name' => 2], 'name'],
     [['name' => 1.5], 'name'],
     [['name' => true], 'name'],
+    [['name' => str_repeat('a', 1)], 'name'],
     [['name' => str_repeat('a', 101)], 'name'],
     [['description' => null], 'description'],
     [['description' => 2], 'description'],
     [['description' => 1.5], 'description'],
     [['description' => true], 'description'],
+    [['description' => str_repeat('a', 1)], 'description'],
     [['description' => str_repeat('a', 1001)], 'description'],
     [['is_visible' => null], 'is_visible'],
     [['is_visible' => 5], 'is_visible'],
@@ -125,6 +127,15 @@ it('requires a valid data when creating', function (array $badData, array|string
     [['images' => [
         ['image' => UploadedFile::fake()->create('testImage', 2049)]
     ]], 'images.0.image'], // max image size
+    [['images' => [
+        ['image' => UploadedFile::fake()->image('testImage1')],
+        ['image' => UploadedFile::fake()->image('testImage1')],
+        ['image' => UploadedFile::fake()->image('testImage1')],
+        ['image' => UploadedFile::fake()->image('testImage1'), 'is_main' => 1],
+    ]], ['images', 'images', 'images', 'images']], // max images
+    [['images' => [
+        ['image' => UploadedFile::fake()->create('testImage')]
+    ]], 'images'], // no main image
     [['images' => [
         ['image' => UploadedFile::fake()->image('testImage1')],
         ['image' => UploadedFile::fake()->image('testImage1')],
@@ -177,15 +188,9 @@ it('requires a valid data when creating', function (array $badData, array|string
         ['specification_id' => 1, 'description' => true]
     ]], 'specifications.0.description'],
     [['specifications' => [
+        ['specification_id' => 1, 'description' => str_repeat('a', 1)]
+    ]], 'specifications.0.description'],
+    [['specifications' => [
         ['specification_id' => 1, 'description' => str_repeat('a', 101)]
     ]], 'specifications.0.description'],
-    [['images' => [
-        ['image' => UploadedFile::fake()->image('testImage1')],
-        ['image' => UploadedFile::fake()->image('testImage1')],
-        ['image' => UploadedFile::fake()->image('testImage1')],
-        ['image' => UploadedFile::fake()->image('testImage1'), 'is_main' => 1],
-    ]], ['images', 'images', 'images', 'images']], // max images
-    [['images' => [
-        ['image' => UploadedFile::fake()->create('testImage')]
-    ]], 'images'], // no main image
 ]);

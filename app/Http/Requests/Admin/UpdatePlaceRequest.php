@@ -15,14 +15,14 @@ class UpdatePlaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:100'],
-            'description' => ['sometimes', 'string', 'max:1000'],
+            'name' => ['sometimes', 'string', 'min:2', 'max:100'],
+            'description' => ['sometimes', 'string', 'min:2', 'max:1000'],
             'is_visible' => ['sometimes', 'boolean'],
             'tag_id' => ['sometimes', 'array'],
             'tag_id.*' => ['required_with:tag_id', 'integer', 'distinct', 'exists:tags,id'],
             'specifications' => ['sometimes', 'array', 'min:1'],
             'specifications.*.specification_id' => ['required_with:specifications', 'integer', 'distinct', 'exists:specifications,id'],
-            'specifications.*.description' => ['required_with:specifications', 'string', 'max:100'],
+            'specifications.*.description' => ['required_with:specifications', 'string', 'min:2', 'max:100'],
         ];
     }
 

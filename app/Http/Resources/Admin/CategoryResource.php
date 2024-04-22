@@ -14,7 +14,7 @@ class CategoryResource extends JsonResource
             'slug' => $this->slug,
             'name' => $this->name,
             'is_visible' => $this->is_visible,
-            'main_image' => ImageResource::make($this->whenLoaded('image', $this->main_image))
+            'image' => ImageResource::make($this->whenLoaded('image', $this->main_image))
         ];
     }
 }
