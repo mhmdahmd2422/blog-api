@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\Passport;
@@ -26,11 +27,11 @@ class AppServiceProvider extends ServiceProvider
                 : $rule;
         });
 
-        Collection::macro('paginate', function($perPage, $page = null, $pageName = 'page') {
+        Collection::macro('paginate', function($perPage, $total = null, $page = null, $pageName = 'page') {
             $page = $page ?: LengthAwarePaginator::resolveCurrentPage($pageName);
             return new LengthAwarePaginator(
                 $this->forPage($page, $perPage), // $items
-                $this->count(),                  // $total
+                $total ??= $this->count(),                  // $total
                 $perPage,
                 $page,
                 [                                // $options
@@ -44,5 +45,9 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        Http::macro('catsApi', function () {
+            return Http::baseUrl('https://catfact.ninja');
+        });
     }
 }

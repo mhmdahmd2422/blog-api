@@ -11,6 +11,8 @@ if (! function_exists('pagination_length')) {
             'tag' => 12,
             'specification' => 12,
             'place' => 12,
+            'catBreed' => 12,
+            'catFact' => 12,
         };
 
         return $length;
