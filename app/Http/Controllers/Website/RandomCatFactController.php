@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Services\CatsAPI\CatsService;
 use Illuminate\Http\Response;
+use Cats;
 
 class RandomCatFactController extends Controller
 {
-    public function index(CatsService $catsService): Response
+    public function index(): Response
     {
-        if ($fact = $catsService->randomFact()) {
+        if ($fact = Cats::randomFact()) {
             return response([
                 'Fact' => $fact
             ]);

@@ -3,17 +3,18 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Services\CatsAPI\CatsService;
 use Illuminate\Http\Response;
+use Cats;
 
 class CatFactController extends Controller
 {
 
-    public function index(CatsService $catsService): Response
+    public function index(): Response
     {
-        $paginationLength = pagination_length('catFact');
+        $paginationLength = request('limit', pagination_length('catFact'));
+        $facts = Cats::facts();
 
-        if ($facts = $catsService->allFacts($paginationLength)) {
+        if ($facts = $facts->paginate($paginationLength, $facts->count())->withQueryString()) {
             return response([
                 'Facts' => $facts
             ]);

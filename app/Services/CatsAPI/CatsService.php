@@ -2,61 +2,50 @@
 
 namespace App\Services\CatsAPI;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
-class CatsService
+class CatsService implements CatsServiceInterface
 {
-    public function allBreeds(int $paginationLength)
+    public function __construct(protected CatsClient $catsClient)
     {
-        $facts = $this->cachedData('catBreeds', '/breeds');
-
-        return $facts ? $facts->paginate($paginationLength) : null;
     }
 
-    public function allFacts(int $paginationLength)
+    public function breeds(): Collection|null
     {
-        $paginationLength = request('limit', $paginationLength);
+        $breeds = $this->cachedForWeek('catBreeds', 'breeds');
 
-        $facts = $this->cachedData('catFacts', '/facts');
+        return $breeds ?? null;
+    }
+
+    public function facts(): Collection|null
+    {
+        $facts = $this->cachedForWeek('catFacts', 'facts');
 
         if ($maxLength = request('max_length')) {
             $facts = $facts->where('length', '<=', $maxLength);
         }
 
-        return $facts ? $facts->paginate(
-            $paginationLength,
-            $facts->count()
-        )->withQueryString() : null;
+        return $facts ?? null;
     }
 
-    public function randomFact()
+    public function randomFact(): Collection|null
     {
-        $facts = $this->cachedData('catFacts', '/facts');
+        $facts = $this->cachedForWeek('catFacts', 'facts');
 
         if ($maxLength = request('max_length')) {
             $facts = $facts->where('length', '<=', $maxLength);
         }
 
-        return $facts ? $facts->random() : null;
+        return $facts ? collect($facts->random()) : null;
     }
 
-    protected function cachedData($key, $path)
+    protected function cachedForWeek($key, $fetcher): Collection|null
     {
-        return Cache::remember($key, 60 * 24, function () use ($key, $path) {
-                $total = Cache::remember($key.'Total' , 60 * 24, function () use ($path) {
-                    $response = Http::catsApi()->get($path);
+        return Cache::remember($key, 60 * 24, function () use ($key, $fetcher) {
+            $response = call_user_func([$this->catsClient, $fetcher]);
 
-                    return $response->successful() ? $response['total'] : null;
-                });
-
-                $response = Http::catsApi()
-                    ->withQueryParameters([
-                        'limit' => $total
-                    ])
-                    ->get($path);
-
-                return $response->successful() ? $response->collect('data') : null;
-            });
+            return $response->successful() ? $response->collect('data') : null;
+        });
     }
 }
