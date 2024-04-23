@@ -2,31 +2,29 @@
 
 namespace App\Services\CatsAPI;
 
+use App\Filters\Website\CatsFilter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
-class CatsService implements CatsServiceInterface
+class CatsService extends CatsFilter implements CatsServiceInterface
 {
     public function __construct(protected CatsClient $catsClient)
     {
+        parent::__construct();
     }
 
     public function breeds(): Collection|null
     {
         $breeds = $this->cachedForWeek('catBreeds', 'breeds');
 
-        return $breeds ?? null;
+        return $this->applyFilters($breeds) ?? null;
     }
 
     public function facts(): Collection|null
     {
         $facts = $this->cachedForWeek('catFacts', 'facts');
 
-        if ($maxLength = request('max_length')) {
-            $facts = $facts->where('length', '<=', $maxLength);
-        }
-
-        return $facts ?? null;
+        return $this->applyFilters($facts) ?? null;
     }
 
     public function randomFact(): Collection|null
@@ -37,7 +35,7 @@ class CatsService implements CatsServiceInterface
             $facts = $facts->where('length', '<=', $maxLength);
         }
 
-        return $facts ? collect($facts->random()) : null;
+        return $facts ? collect($this->applyFilters($facts)->random()) : null;
     }
 
     protected function cachedForWeek($key, $fetcher): Collection|null

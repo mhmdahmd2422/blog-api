@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Website;
 
-use App\Filters\Website\CatBreedFilter;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Cats;
