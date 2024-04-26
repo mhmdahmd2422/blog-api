@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Filters\Website\Services\CatFactFilter;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Cats;
 
 class RandomCatFactController extends Controller
 {
-    public function index(): Response
+    public function index(CatFactFilter $filters): Response
     {
-        if ($fact = Cats::randomFact()) {
+        $fact = Cats::randomFact()->filter($filters)->random();
+
+        if ($fact) {
             return response([
                 'Fact' => $fact
             ]);
@@ -18,6 +21,6 @@ class RandomCatFactController extends Controller
 
         return response([
             'message' => __('third-party.error')
-        ], 503);
+        ], 203);
     }
 }

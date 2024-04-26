@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-
 use App\Services\CatsAPI\CatsClient;
 use App\Services\CatsAPI\CatsClientInterface;
 use App\Services\CatsAPI\CatsService;
@@ -14,9 +13,6 @@ use Illuminate\Support\ServiceProvider;
 
 class CatsServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     */
     public function register(): void
     {
         $this->app->bind(CatsClientInterface::class, function (Application $app) {
@@ -37,9 +33,6 @@ class CatsServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Bootstrap services.
-     */
     public function boot(): void
     {
         //

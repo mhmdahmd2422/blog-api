@@ -4,13 +4,9 @@ namespace App\Filters;
 
 use Illuminate\Support\Collection;
 
-class CollectionFilter
+abstract class CollectionFilter
 {
     protected Collection $collection;
-
-    public function __construct()
-    {
-    }
 
     public function applyFilters($collection): Collection
     {
@@ -24,6 +20,7 @@ class CollectionFilter
                 );
             }
         }
+
 
         return $this->collection;
     }

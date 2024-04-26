@@ -6,9 +6,11 @@ use Illuminate\Support\Collection;
 
 interface CatsServiceInterface
 {
-    public function breeds(): Collection|null;
+    public function breeds(): CatsService;
 
-    public function facts(): Collection|null;
+    public function facts(): CatsService;
 
-    public function randomFact(): Collection|null;
+    public function randomFact(): CatsService;
+
+    public function get(): Collection|null;
 }

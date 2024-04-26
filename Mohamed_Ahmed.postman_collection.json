@@ -8658,6 +8658,38 @@
 									"path": [
 										"api",
 										"cats"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "5",
+											"disabled": true
+										},
+										{
+											"key": "breed",
+											"value": "keyword",
+											"disabled": true
+										},
+										{
+											"key": "country",
+											"value": "keyword",
+											"disabled": true
+										},
+										{
+											"key": "origin",
+											"value": "keyword",
+											"disabled": true
+										},
+										{
+											"key": "coat",
+											"value": "keyword",
+											"disabled": true
+										},
+										{
+											"key": "pattern",
+											"value": "keyword",
+											"disabled": true
+										}
 									]
 								}
 							},

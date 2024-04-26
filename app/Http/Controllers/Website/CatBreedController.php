@@ -2,24 +2,26 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Filters\Website\Services\CatBreedFilter;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Cats;
 
 class CatBreedController extends Controller
 {
-    public function index(): Response
+    public function index(CatBreedFilter $filters): Response
     {
-        $paginationLength = pagination_length('catBreed');
+        $paginationLength = user_defined_pagination('limit', 'catBreed');
+        $breeds = Cats::breeds()->filter($filters)->get();
 
-        if ($breeds = Cats::breeds()->paginate($paginationLength)) {
+        if ($breeds) {
             return response([
-                'Breeds' => $breeds
+                'Breeds' => $breeds->paginate($paginationLength)
             ]);
         }
 
         return response([
             'message' => __('third-party.error')
-        ], 503);
+        ], 203);
     }
 }

@@ -2,48 +2,66 @@
 
 namespace App\Services\CatsAPI;
 
-use App\Filters\Website\CatsFilter;
+use App\Filters\CollectionFilter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
-class CatsService extends CatsFilter implements CatsServiceInterface
+class CatsService implements CatsServiceInterface
 {
+    protected Collection|null $catCollection;
+
     public function __construct(protected CatsClient $catsClient)
     {
-        parent::__construct();
     }
 
-    public function breeds(): Collection|null
+    public function breeds(): CatsService
     {
-        $breeds = $this->cachedForWeek('catBreeds', 'breeds');
+        $this->catCollection = $this->cachedForWeek('catBreeds', 'breeds');
 
-        return $this->applyFilters($breeds) ?? null;
+        return $this;
     }
 
-    public function facts(): Collection|null
+    public function facts(): CatsService
     {
-        $facts = $this->cachedForWeek('catFacts', 'facts');
+        $this->catCollection = $this->cachedForWeek('catFacts', 'facts');
 
-        return $this->applyFilters($facts) ?? null;
+        return $this;
     }
 
-    public function randomFact(): Collection|null
+    public function randomFact(): CatsService
     {
-        $facts = $this->cachedForWeek('catFacts', 'facts');
+        $this->catCollection = $this->cachedForWeek('catFacts', 'facts');
 
-        if ($maxLength = request('max_length')) {
-            $facts = $facts->where('length', '<=', $maxLength);
+        return $this;
+    }
+
+    public function filter(CollectionFilter $filter): CatsService
+    {
+        if ($this->catCollection) {
+            $this->catCollection = $filter->applyFilters($this->catCollection);
         }
 
-        return $facts ? collect($this->applyFilters($facts)->random()) : null;
+        return $this;
+    }
+
+    public function get(): Collection|null
+    {
+        return $this->catCollection ?? null;
+    }
+
+    public function random(): array|null
+    {
+        return $this->get()?->random();
     }
 
     protected function cachedForWeek($key, $fetcher): Collection|null
     {
-        return Cache::remember($key, 60 * 24, function () use ($key, $fetcher) {
+        $cachedData = Cache::remember($key, 60 * 24, function () use ($fetcher) {
             $response = call_user_func([$this->catsClient, $fetcher]);
 
-            return $response->successful() ? $response->collect('data') : null;
+            return $response->successful() ? $response->collect('data') : collect();
         });
+
+        return $cachedData->isNotEmpty() ? $cachedData : null;
     }
 }

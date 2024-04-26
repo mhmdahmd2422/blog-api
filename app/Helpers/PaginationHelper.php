@@ -18,3 +18,12 @@ if (! function_exists('pagination_length')) {
         return $length;
     }
 }
+
+if (! function_exists('user_defined_pagination')) {
+    function user_defined_pagination(string $querySting, string $fallback): int
+    {
+        $length = (int) request($querySting, pagination_length($fallback)) ?: 1;
+
+        return $length;
+    }
+}
