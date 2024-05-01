@@ -5,18 +5,20 @@ namespace App\Models;
 use App\Traits\Filterable;
 use App\Traits\Sluggable;
 use App\Traits\HasMorphedImages;
+use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Arr;
 
 class Post extends Model
 {
-    use HasFactory, Sluggable, HasMorphedImages, Filterable;
+    use HasFactory, Sluggable, HasMorphedImages, Filterable, Translatable;
 
     protected $fillable = [
         'user_id',
@@ -27,6 +29,11 @@ class Post extends Model
 
     protected $casts = [
         'is_visible' => 'boolean'
+    ];
+
+    public array $translatables = [
+        'title',
+        'description'
     ];
 
     public function scopeVisible(Builder $query, bool $is_visible = true): void
@@ -85,6 +92,7 @@ class Post extends Model
 
         $this->categories()->sync([]);
         $this->comments()->delete();
+        $this->translations()->delete();
         $this->delete();
 
         return true;
@@ -110,5 +118,46 @@ class Post extends Model
     public function slugAttribute()
     {
         return $this->title;
+    }
+
+    public function title(): Attribute
+    {
+        if ($this->defaultTranslation){
+            return new Attribute(
+                get: fn() => $this->defaultTranslation->title,
+            );
+        }
+
+        return new Attribute(
+            get: fn(string $value) => $value,
+        );
+    }
+
+    public function description(): Attribute
+    {
+        if ($this->defaultTranslation){
+            return new Attribute(
+                get: fn() => $this->defaultTranslation->description,
+            );
+        }
+
+        return new Attribute(
+            get: fn(string $value) => $value,
+        );
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(PostTranslation::class);
+    }
+
+    public function defaultTranslation(): HasOne
+    {
+        return $this->translations()->one()->where('locale', app()->getLocale());
+    }
+
+    public function translationModel(): Model
+    {
+        return new PostTranslation();
     }
 }

@@ -27,7 +27,7 @@ Route::group([
 Route::group([
     'as' => 'admin.',
     'prefix' => 'admin',
-    'middleware' => 'auth:api'
+    'middleware' => ['auth:api', 'set-locale']
 ], function () {
     Route::apiResource('users', UserController::class)->except('store');
     Route::apiResource('posts', PostController::class);

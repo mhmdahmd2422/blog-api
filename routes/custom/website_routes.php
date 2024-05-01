@@ -30,7 +30,7 @@ Route::group([
 });
 
 Route::name('website.')
-    ->middleware(['auth:api', ResourceVisibility::class])
+    ->middleware(['auth:api', 'set-locale', ResourceVisibility::class])
     ->group(function () {
         Route::apiResource('/posts', PostController::class)
             ->only(['index', 'show']);
